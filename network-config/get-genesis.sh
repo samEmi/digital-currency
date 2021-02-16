@@ -1,0 +1,1 @@
+configtxgen -inspectBlock ./config/genesis.block

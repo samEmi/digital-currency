@@ -1,0 +1,35 @@
+# This file generates crypto materials
+
+# ---------------------------------------------------------------------------
+# "OrdererOrgs" - Definition of organizations managing orderer nodes
+# ---------------------------------------------------------------------------
+OrdererOrgs:
+  # ---------------------------------------------------------------------------
+  # Orderer
+  # ---------------------------------------------------------------------------
+  - Name: Orderer
+    Domain: example.com
+    Specs:
+      - Hostname: orderer
+# ---------------------------------------------------------------------------
+# "PeerOrgs" - Definition of organizations managing peer nodes
+# ---------------------------------------------------------------------------
+PeerOrgs:
+  - Name: MSB1
+    Domain: org1.example.com
+    Template:
+      Count: 1
+    Users:
+      Count: 1
+  - Name: MSB2
+    Domain: org2.example.com
+    Template:
+      Count: 1
+    Users:
+      Count: 1
+  - Name: MSB3
+    Domain: org3.example.com
+    Template:
+      Count: 1
+    Users:
+      Count: 1
