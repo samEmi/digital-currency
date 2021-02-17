@@ -34,12 +34,26 @@ def sqlSelect(conn, select):
     except Error as e:
         print(e)
 
-def sqlInsert(conn, insert):
-    cur = conn.cursor()
-    cur.execute(sql, task)
-    conn.commit()
+def sqlInsert(conn, sql, values):
+    try:
+        cur = conn.cursor()
+        cur.execute(sql, values)
+        conn.commit()
+        conn.close()
+        return cur.lastrowid
+    except Error as e:
+        print(e)
 
-    return cur.lastrowid
+def sqlDelete(conn, sql, values):
+    try:
+        for value in values:
+            tk = (value,)
+            cur = conn.cursor()
+            cur.execute(sql, tk)
+            conn.commit()
+        conn.close()
+    except Error as e:
+        print(e)
 
 
 # def checkWalletExists():
