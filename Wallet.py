@@ -24,7 +24,40 @@ class ColdWallet:
             privk = kg.generate_key()
             self.walletAddress = privk
 
+<<<<<<< HEAD:Wallet/Wallet.py
+    def receive(self):
+        # Do we need this function? Might only be useful when transaction is sent from another PW
+        # since receiving transactions from account should be handled by request_tokens_from_account
+        pass
+
+    def request_tokens_from_account(self):
+        '''Function to sent transaction with payload: pubKey, blind(token ids), amounts'''
+        # generate random token ids, each token key is associated with amount
+        # blind the token ids: interactive back and forth scheme between user and signer
+        # blind the amount with Pedersen commitments
+        # generate public key for tokens to be sent to
+        # connect to fabric gateway
+        # retrieve account identity from Fabric wallet i.e. Alice 'account' credentials
+        # invoke Fabric chaincode with transaction payload: pubKey, blind(token ids), amounts
+        # For this transaction endorsement should only verify that the transaction has been correctly built
+        # and that the account is legitimate
+        # The chaincode function invocation returns a transaction response which in our case should contain the signed blinded tokens
+        # These will be added to the wallet database?
+
+
+    def send_to_pw(self):
+        pass
+
+    def send_to_account(self):
+        '''Function which takes a set of signed(blinded(tokens)) unblinds them 
+        and sends a transaction with payload: signed(tokens), amount, receiver identity ('Bob')'''
+        # In this case the network endorsing peers will only verify the signature
+
+
+    def send(self, recipientAddress):
+=======
     def receive(self, token):
+>>>>>>> 33074c55225847c67753cd02e906f30491845c52:Wallet.py
         kg = KeyGeneration.KeyGenerator()
         privk = kg.generate_key()
         pk = kg.private2public(privk)
