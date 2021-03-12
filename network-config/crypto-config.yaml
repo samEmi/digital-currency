@@ -1,35 +1,244 @@
-# This file generates crypto materials
 
-# ---------------------------------------------------------------------------
-# "OrdererOrgs" - Definition of organizations managing orderer nodes
-# ---------------------------------------------------------------------------
 OrdererOrgs:
   # ---------------------------------------------------------------------------
   # Orderer
   # ---------------------------------------------------------------------------
   - Name: Orderer
     Domain: example.com
+    EnableNodeOUs: true
+
+    # ---------------------------------------------------------------------------
+    # "Specs" - See PeerOrgs below for complete description
+    # ---------------------------------------------------------------------------
     Specs:
-      - Hostname: orderer
+      - Hostname: orderer1
+        SANS:
+            - "localhost"
+            - "127.0.0.1"
+      - Hostname: orderer2
+        SANS:
+          - "localhost"
+          - "127.0.0.1"
+      - Hostname: orderer3
+        SANS:
+            - "localhost"
+            - "127.0.0.1"
+      - Hostname: orderer4
+        SANS:
+            - "localhost"
+            - "127.0.0.1"
+      - Hostname: orderer5
+        SANS:
+            - "localhost"
+            - "127.0.0.1"
+
 # ---------------------------------------------------------------------------
 # "PeerOrgs" - Definition of organizations managing peer nodes
 # ---------------------------------------------------------------------------
 PeerOrgs:
+  # ---------------------------------------------------------------------------
+  # Org1
+  # ---------------------------------------------------------------------------
   - Name: MSB1
-    Domain: org1.example.com
+    Domain: msb1.example.com
+    EnableNodeOUs: true
+
     Template:
-      Count: 1
+      Count: 2
+      # Start: 5
+      # Hostname: {{.Prefix}}{{.Index}} # default
+      SANS:
+        - "localhost"
+
     Users:
-      Count: 1
+      Count: 5
+
   - Name: MSB2
-    Domain: org2.example.com
+    Domain: msb2.example.com
+    EnableNodeOUs: true
+
     Template:
-      Count: 1
+      Count: 2
+      # Start: 5
+      # Hostname: {{.Prefix}}{{.Index}} # default
+      SANS:
+        - "localhost"
+
     Users:
-      Count: 1
+      Count: 5
+
   - Name: MSB3
-    Domain: org3.example.com
+    Domain: msb3.example.com
+    EnableNodeOUs: true
+
     Template:
-      Count: 1
+      Count: 2
+      # Start: 5
+      # Hostname: {{.Prefix}}{{.Index}} # default
+      SANS:
+        - "localhost"
+
     Users:
-      Count: 1
+      Count: 5
+
+  - Name: MSB4
+    Domain: msb4.example.com
+    EnableNodeOUs: true
+
+    Template:
+      Count: 2
+      # Start: 5
+      # Hostname: {{.Prefix}}{{.Index}} # default
+      SANS:
+        - "localhost"
+    Users:
+      Count: 5
+
+  - Name: MSB5
+    Domain: msb5.example.com
+    EnableNodeOUs: true
+
+    Template:
+      Count: 2
+      # Start: 5
+      # Hostname: {{.Prefix}}{{.Index}} # default
+      SANS:
+        - "localhost"
+    Users:
+      Count: 5
+
+  - Name: R1
+    Domain: r1.example.com
+    EnableNodeOUs: true
+
+    Template:
+      Count: 2
+      # Start: 5
+      # Hostname: {{.Prefix}}{{.Index}} # default
+      SANS:
+        - "localhost"
+    Users:
+      Count: 5
+  
+  - Name: R2
+    Domain: r2.example.com
+    EnableNodeOUs: true
+
+    Template:
+      Count: 2
+      # Start: 5
+      # Hostname: {{.Prefix}}{{.Index}} # default
+      SANS:
+        - "localhost"
+    Users:
+      Count: 5
+  
+  - Name: R3
+    Domain: r3.example.com
+    EnableNodeOUs: true
+
+    Template:
+      Count: 2
+      # Start: 5
+      # Hostname: {{.Prefix}}{{.Index}} # default
+      SANS:
+        - "localhost"
+    Users:
+      Count: 5
+
+  - Name: R4
+    Domain: r4.example.com
+    EnableNodeOUs: true
+
+    Template:
+      Count: 2
+      # Start: 5
+      # Hostname: {{.Prefix}}{{.Index}} # default
+      SANS:
+        - "localhost"
+    Users:
+      Count: 5
+
+  - Name: R5
+    Domain: r5.example.com
+    EnableNodeOUs: true
+
+    Template:
+      Count: 2
+      # Start: 5
+      # Hostname: {{.Prefix}}{{.Index}} # default
+      SANS:
+        - "localhost"
+    Users:
+      Count: 5
+  
+  - Name: C1
+    Domain: c1.example.com
+    EnableNodeOUs: true
+
+    Template:
+      Count: 2
+      # Start: 5
+      # Hostname: {{.Prefix}}{{.Index}} # default
+      SANS:
+        - "localhost"
+    Users:
+      Count: 5
+
+  - Name: C2
+    Domain: c2.example.com
+    EnableNodeOUs: true
+
+    Template:
+      Count: 2
+      # Start: 5
+      # Hostname: {{.Prefix}}{{.Index}} # default
+      SANS:
+        - "localhost"
+    Users:
+      Count: 5
+  
+  - Name: C3
+    Domain: c3.example.com
+    EnableNodeOUs: true
+
+    Template:
+      Count: 2
+      # Start: 5
+      # Hostname: {{.Prefix}}{{.Index}} # default
+      SANS:
+        - "localhost"
+    Users:
+      Count: 5
+
+  - Name: C4
+    Domain: c4.example.com
+    EnableNodeOUs: true
+
+    Template:
+      Count: 2
+      # Start: 5
+      # Hostname: {{.Prefix}}{{.Index}} # default
+      SANS:
+        - "localhost"
+    Users:
+      Count: 5
+
+  - Name: C5
+    Domain: c5.example.com
+    EnableNodeOUs: true
+
+    Template:
+      Count: 2
+      # Start: 5
+      # Hostname: {{.Prefix}}{{.Index}} # default
+      SANS:
+        - "localhost"
+    Users:
+      Count: 5
+  
+
+
+  
+
+  
