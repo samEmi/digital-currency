@@ -126,7 +126,7 @@ Organizations:
         # the genesis block in the Application section context.
         AnchorPeers:
             - Host: peer0.msb2.example.com
-              Port: 8051
+              Port: 9051
 
 
     - &MSB3
@@ -169,7 +169,7 @@ Organizations:
         # the genesis block in the Application section context.
         AnchorPeers:
             - Host: peer0.msb3.example.com
-              Port: 9051
+              Port: 11051
     - &MSB4
         # Name is the key by which this org will be referenced in channel
         # configuration transactions.
@@ -210,7 +210,7 @@ Organizations:
         # the genesis block in the Application section context.
         AnchorPeers:
             - Host: peer0.msb4.example.com
-              Port: 10051
+              Port: 13051
     
     - &MSB5
         # Name is the key by which this org will be referenced in channel
@@ -252,7 +252,7 @@ Organizations:
         # the genesis block in the Application section context.
         AnchorPeers:
             - Host: peer0.msb5.example.com
-              Port: 11051
+              Port: 15051
 
     # - &R1
     #     # Name is the key by which this org will be referenced in channel
@@ -763,7 +763,7 @@ Channel: &ChannelDefaults
 Profiles:
 
     BasicChannel:
-        Consortium: DigitalMoney
+        Consortium: SampleConsortium
         <<: *ChannelDefaults
         Application:
             <<: *ApplicationDefaults
