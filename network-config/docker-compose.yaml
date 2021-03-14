@@ -111,7 +111,7 @@ services:
 
   
   orderer1.example.com:
-    container_name: orderer.example.com
+    container_name: orderer1.example.com
     image: hyperledger/fabric-orderer:2.1
     dns_search: .
     environment:
@@ -478,7 +478,7 @@ services:
       - 8051:8051
     volumes:
       - ./crypto-config/peerOrganizations/msb1.example.com/peers/peer1.msb4.example.com/msp:/etc/hyperledger/crypto/peer/msp
-      - ./channel/crypto-config/peerOrganizations/msb1.example.com/peers/peer1.msb4.example.com/tls:/etc/hyperledger/crypto/peer/tls
+      - ./crypto-config/peerOrganizations/msb1.example.com/peers/peer1.msb4.example.com/tls:/etc/hyperledger/crypto/peer/tls
       - /var/run/:/host/var/run/
       - ./:/etc/hyperledger/channel/
     networks:
