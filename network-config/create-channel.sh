@@ -59,7 +59,7 @@ setGlobalsForPeer0Org3(){
     export CORE_PEER_LOCALMSPID="MSB3"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_MSB3_CA
     export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/msb3.example.com/users/Admin@msb3.example.com/msp
-    export CORE_PEER_ADDRESS=localhost:9051
+    export CORE_PEER_ADDRESS=localhost:11051
     
 }
 
@@ -67,7 +67,7 @@ setGlobalsForPeer1Org3(){
     export CORE_PEER_LOCALMSPID="MSB3"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_MSB3_CA
     export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/msb3.example.com/users/Admin@msb3.example.com/msp
-    export CORE_PEER_ADDRESS=localhost:10051
+    export CORE_PEER_ADDRESS=localhost:12051
     
 }
 
@@ -75,7 +75,7 @@ setGlobalsForPeer0Org4(){
     export CORE_PEER_LOCALMSPID="MSB4"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_MSB4_CA
     export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/msb4.example.com/users/Admin@msb4.example.com/msp
-    export CORE_PEER_ADDRESS=localhost:9051
+    export CORE_PEER_ADDRESS=localhost:13051
     
 }
 
@@ -83,7 +83,7 @@ setGlobalsForPeer1Org4(){
     export CORE_PEER_LOCALMSPID="MSB4"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_MSB4_CA
     export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/msb4.example.com/users/Admin@msb4.example.com/msp
-    export CORE_PEER_ADDRESS=localhost:10051
+    export CORE_PEER_ADDRESS=localhost:14051
     
 }
 
@@ -91,7 +91,7 @@ setGlobalsForPeer0Org5(){
     export CORE_PEER_LOCALMSPID="MSB5"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_MSB5_CA
     export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/msb5.example.com/users/Admin@msb5.example.com/msp
-    export CORE_PEER_ADDRESS=localhost:9051
+    export CORE_PEER_ADDRESS=localhost:15051
     
 }
 
@@ -99,7 +99,7 @@ setGlobalsForPeer1Org5(){
     export CORE_PEER_LOCALMSPID="MSB5"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_MSB5_CA
     export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/msb5.example.com/users/Admin@msb5.example.com/msp
-    export CORE_PEER_ADDRESS=localhost:10051
+    export CORE_PEER_ADDRESS=localhost:16051
     
 }
 
@@ -123,10 +123,10 @@ removeOldCrypto(){
 
 joinChannel(){
     setGlobalsForPeer0Org1
-    peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block
+    peer channel join -b ./channel-artifacts/mychannel3.block
     
     setGlobalsForPeer1Org1
-    peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block
+    peer channel join -b ./channel-artifacts/mychannel3.block
     
     setGlobalsForPeer0Org2
     peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block
@@ -160,11 +160,20 @@ updateAnchorPeers(){
     
     setGlobalsForPeer0Org2
     peer channel update -o localhost:7050 --ordererTLSHostnameOverride orderer1.example.com -c $CHANNEL_NAME -f ./${CORE_PEER_LOCALMSPID}anchors.tx --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
+
+    setGlobalsForPeer0Org3
+    peer channel update -o localhost:7050 --ordererTLSHostnameOverride orderer1.example.com -c $CHANNEL_NAME -f ./${CORE_PEER_LOCALMSPID}anchors.tx --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
+    
+    setGlobalsForPeer0Org4
+    peer channel update -o localhost:7050 --ordererTLSHostnameOverride orderer1.example.com -c $CHANNEL_NAME -f ./${CORE_PEER_LOCALMSPID}anchors.tx --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
+
+    setGlobalsForPeer0Org5
+    peer channel update -o localhost:7050 --ordererTLSHostnameOverride orderer1.example.com -c $CHANNEL_NAME -f ./${CORE_PEER_LOCALMSPID}anchors.tx --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
     
 }
 
 # removeOldCrypto
 
 #createChannel
-joinChannel
-# updateAnchorPeers
+#joinChannel
+updateAnchorPeers
