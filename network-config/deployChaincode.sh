@@ -6,32 +6,32 @@ export PEER0_MSB3_CA=${PWD}/crypto-config/peerOrganizations/msb3.example.com/pee
 export PEER0_MSB4_CA=${PWD}/crypto-config/peerOrganizations/msb4.example.com/peers/peer0.msb4.example.com/tls/ca.crt
 export PEER0_MSB5_CA=${PWD}/crypto-config/peerOrganizations/msb5.example.com/peers/peer0.msb5.example.com/tls/ca.crt
 
-# export FABRIC_CFG_PATH=${PWD}/artifacts/channel/config/
+export FABRIC_CFG_PATH=${PWD}/config/
 
 #IMPLEMENT OUR OWN COLLECTIONS?
 # export PRIVATE_DATA_CONFIG=${PWD}/artifacts/private-data/collections_config.json
 
-export CHANNEL_NAME=mychannel
+export CHANNEL_NAME=mychannelnew
 
 setGlobalsForOrderer() {
     export CORE_PEER_LOCALMSPID="OrdererMSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/crypto-config/ordererOrganizations/example.com/orderers/orderer1.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/ordererOrganizations/example.com/users/Admin@example.com/msp
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/ordererOrganizations/example.com/users/Admin@example.com/msp/
 
 }
 
 setGlobalsForPeer0Org1() {
     export CORE_PEER_LOCALMSPID="MSB1"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_MSB1_CA
+    # export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganization/msb1.example.com/users/Admin@msb1.example.com/msp
     export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/msb1.example.com/peers/peer0.msb1.example.com/msp
-    # export CORE_PEER_MSPCONFIGPATH=${PWD}/artifacts/channel/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp
     export CORE_PEER_ADDRESS=localhost:7051
 }
 
 setGlobalsForPeer1Org1() {
     export CORE_PEER_LOCALMSPID="MSB1"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_MSB1_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganization/msb1.example.com/users/Admin@msb1.example.com/msp
+    # export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganization/msb1.example.com/users/Admin@msb1.example.com/msp
     export CORE_PEER_ADDRESS=localhost:8051
 
 }
@@ -110,19 +110,84 @@ presetup() {
 }
 # presetup
 
-CHANNEL_NAME="mychannel"
+CHANNEL_NAME="mychannel3"
 CC_RUNTIME_LANGUAGE="golang"
 VERSION="1"
 CC_SRC_PATH="./chaincode-go"
 CC_NAME="token-erc-20"
 
 packageChaincode() {
+    # chaincode needs to be packaged on every single 
     rm -rf ${CC_NAME}.tar.gz
     setGlobalsForPeer0Org1
     peer lifecycle chaincode package ${CC_NAME}.tar.gz \
         --path ${CC_SRC_PATH} --lang ${CC_RUNTIME_LANGUAGE} \
         --label ${CC_NAME}_${VERSION}
     echo "===================== Chaincode is packaged on peer0.org1 ===================== "
+
+    # rm -rf ${CC_NAME}.tar.gz
+    # setGlobalsForPeer1Org1
+    # peer lifecycle chaincode package ${CC_NAME}.tar.gz \
+    #     --path ${CC_SRC_PATH} --lang ${CC_RUNTIME_LANGUAGE} \
+    #     --label ${CC_NAME}_${VERSION}
+    # echo "===================== Chaincode is packaged on peer1.org1 ===================== "
+
+    # rm -rf ${CC_NAME}.tar.gz
+    # setGlobalsForPeer0Org2
+    # peer lifecycle chaincode package ${CC_NAME}.tar.gz \
+    #     --path ${CC_SRC_PATH} --lang ${CC_RUNTIME_LANGUAGE} \
+    #     --label ${CC_NAME}_${VERSION}
+    # echo "===================== Chaincode is packaged on peer0.org2 ===================== "
+
+    # rm -rf ${CC_NAME}.tar.gz
+    # setGlobalsForPeer1Org2
+    # peer lifecycle chaincode package ${CC_NAME}.tar.gz \
+    #     --path ${CC_SRC_PATH} --lang ${CC_RUNTIME_LANGUAGE} \
+    #     --label ${CC_NAME}_${VERSION}
+    # echo "===================== Chaincode is packaged on peer1.org2 ===================== "
+
+    # rm -rf ${CC_NAME}.tar.gz
+    # setGlobalsForPeer0Org3
+    # peer lifecycle chaincode package ${CC_NAME}.tar.gz \
+    #     --path ${CC_SRC_PATH} --lang ${CC_RUNTIME_LANGUAGE} \
+    #     --label ${CC_NAME}_${VERSION}
+    # echo "===================== Chaincode is packaged on peer0.org3 ===================== "
+
+    # rm -rf ${CC_NAME}.tar.gz
+    # setGlobalsForPeer1Org3
+    # peer lifecycle chaincode package ${CC_NAME}.tar.gz \
+    #     --path ${CC_SRC_PATH} --lang ${CC_RUNTIME_LANGUAGE} \
+    #     --label ${CC_NAME}_${VERSION}
+    # echo "===================== Chaincode is packaged on peer1.org3 ===================== "
+
+    #  rm -rf ${CC_NAME}.tar.gz
+    # setGlobalsForPeer0Org4
+    # peer lifecycle chaincode package ${CC_NAME}.tar.gz \
+    #     --path ${CC_SRC_PATH} --lang ${CC_RUNTIME_LANGUAGE} \
+    #     --label ${CC_NAME}_${VERSION}
+    # echo "===================== Chaincode is packaged on peer0.org4 ===================== "
+
+    # rm -rf ${CC_NAME}.tar.gz
+    # setGlobalsForPeer1Org4
+    # peer lifecycle chaincode package ${CC_NAME}.tar.gz \
+    #     --path ${CC_SRC_PATH} --lang ${CC_RUNTIME_LANGUAGE} \
+    #     --label ${CC_NAME}_${VERSION}
+    # echo "===================== Chaincode is packaged on peer1.org4 ===================== "
+
+    #  rm -rf ${CC_NAME}.tar.gz
+    # setGlobalsForPeer0Org5
+    # peer lifecycle chaincode package ${CC_NAME}.tar.gz \
+    #     --path ${CC_SRC_PATH} --lang ${CC_RUNTIME_LANGUAGE} \
+    #     --label ${CC_NAME}_${VERSION}
+    # echo "===================== Chaincode is packaged on peer0.org5 ===================== "
+
+    # rm -rf ${CC_NAME}.tar.gz
+    # setGlobalsForPeer1Org5
+    # peer lifecycle chaincode package ${CC_NAME}.tar.gz \
+    #     --path ${CC_SRC_PATH} --lang ${CC_RUNTIME_LANGUAGE} \
+    #     --label ${CC_NAME}_${VERSION}
+    # echo "===================== Chaincode is packaged on peer1.org5 ===================== "
+
 }
 packageChaincode
 
@@ -135,16 +200,41 @@ installChaincode() {
     # peer lifecycle chaincode install ${CC_NAME}.tar.gz
     # echo "===================== Chaincode is installed on peer1.org1 ===================== "
 
-    setGlobalsForPeer0Org2
-    peer lifecycle chaincode install ${CC_NAME}.tar.gz
-    echo "===================== Chaincode is installed on peer0.org2 ===================== "
+    # setGlobalsForPeer0Org2
+    # peer lifecycle chaincode install ${CC_NAME}.tar.gz
+    # echo "===================== Chaincode is installed on peer0.org2 ===================== "
 
     # setGlobalsForPeer1Org2
     # peer lifecycle chaincode install ${CC_NAME}.tar.gz
     # echo "===================== Chaincode is installed on peer1.org2 ===================== "
+
+    # setGlobalsForPeer0Org3
+    # peer lifecycle chaincode install ${CC_NAME}.tar.gz
+    # echo "===================== Chaincode is installed on peer0.org3 ===================== "
+
+    # setGlobalsForPeer1Org3
+    # peer lifecycle chaincode install ${CC_NAME}.tar.gz
+    # echo "===================== Chaincode is installed on peer1.org3 ===================== "
+
+    # setGlobalsForPeer0Org4
+    # peer lifecycle chaincode install ${CC_NAME}.tar.gz
+    # echo "===================== Chaincode is installed on peer0.org4 ===================== "
+
+    # setGlobalsForPeer1Org4
+    # peer lifecycle chaincode install ${CC_NAME}.tar.gz
+    # echo "===================== Chaincode is installed on peer1.org4 ===================== "
+
+    # setGlobalsForPeer0Org5
+    # peer lifecycle chaincode install ${CC_NAME}.tar.gz
+    # echo "===================== Chaincode is installed on peer0.org5 ===================== "
+
+    # setGlobalsForPeer1Org5
+    # peer lifecycle chaincode install ${CC_NAME}.tar.gz
+    # echo "===================== Chaincode is installed on peer1.org5 ===================== "
+
 }
 
-# installChaincode
+installChaincode
 
 queryInstalled() {
     setGlobalsForPeer0Org1
@@ -182,7 +272,7 @@ getBlock() {
     #     --ordererTLSHostnameOverride orderer.example.com --tls \
     #     --cafile $ORDERER_CA
 
-    peer channel getinfo  -c mychannel -o localhost:7050 \
+    peer channel getinfo  -c mychannel3 -o localhost:7050 \
         --ordererTLSHostnameOverride orderer.example.com --tls \
         --cafile $ORDERER_CA
 }

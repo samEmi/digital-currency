@@ -437,6 +437,8 @@ services:
     volumes:
       - ./crypto-config/peerOrganizations/msb1.example.com/peers/peer0.msb1.example.com/msp:/etc/hyperledger/crypto/peer/msp
       - ./crypto-config/peerOrganizations/msb1.example.com/peers/peer0.msb1.example.com/tls:/etc/hyperledger/crypto/peer/tls
+      # - ./crypto-config/peerOrganization/msb1.example.com/users/Admin@msb1.example.com/msp:/etc/hyperledger/crypto/user/msp
+
       - /var/run/:/host/var/run/
       - ./:/etc/hyperledger/channel/
     networks:
@@ -450,7 +452,7 @@ services:
     environment:
       - FABRIC_LOGGING_SPEC=info
       - ORDERER_GENERAL_LOGLEVEL=info
-      - CORE_PEER_LOCALMSPID=MSB2
+      - CORE_PEER_LOCALMSPID=MSB1
 
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=artifacts_test
 
@@ -479,8 +481,9 @@ services:
     ports:
       - 8051:8051
     volumes:
-      - ./crypto-config/peerOrganizations/msb1.example.com/peers/peer1.msb4.example.com/msp:/etc/hyperledger/crypto/peer/msp
-      - ./crypto-config/peerOrganizations/msb1.example.com/peers/peer1.msb4.example.com/tls:/etc/hyperledger/crypto/peer/tls
+      - ./crypto-config/peerOrganizations/msb1.example.com/peers/peer1.msb1.example.com/msp:/etc/hyperledger/crypto/peer/msp
+      - ./crypto-config/peerOrganizations/msb1.example.com/peers/peer1.msb1.example.com/tls:/etc/hyperledger/crypto/peer/tls
+      # - ./crypto-config/peerOrganization/msb1.example.com/users/Admin@msb1.example.com/msp:/etc/hyperledger/crypto/user/msp
       - /var/run/:/host/var/run/
       - ./:/etc/hyperledger/channel/
     networks:

@@ -11,7 +11,7 @@ export PEER0_MSB5_CA=${PWD}/crypto-config/peerOrganizations/msb5.example.com/pee
 
 export FABRIC_CFG_PATH=${PWD}/config/
 
-export CHANNEL_NAME=mychannel3
+export CHANNEL_NAME=mychannelna
 
 # Orderer
 
@@ -122,11 +122,11 @@ removeOldCrypto(){
 
 
 joinChannel(){
-    setGlobalsForPeer0Org1
-    peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block
+    # setGlobalsForPeer0Org1
+    # peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block
     
-    setGlobalsForPeer1Org1
-    peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block
+    # setGlobalsForPeer1Org1
+    # peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block
     
     setGlobalsForPeer0Org2
     peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block
@@ -174,6 +174,6 @@ updateAnchorPeers(){
 
 # removeOldCrypto
 
-#createChannel
-#joinChannel
+# createChannel
+joinChannel
 updateAnchorPeers
