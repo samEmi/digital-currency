@@ -6,7 +6,7 @@
 # rm -rf ../../channel-artifacts/*
 
 #Generate Crypto artifactes for organizations
-cryptogen generate --config=./crypto-config.yaml --output=./crypto-config/
+# cryptogen generate --config=./crypto-config.yaml --output=./crypto-config/
 
 
 # System channel
@@ -18,10 +18,10 @@ CHANNEL_NAME="mychannelna"
 echo $CHANNEL_NAME
 
 # Generate System Genesis block
-configtxgen -profile OrdererGenesis -configPath . -channelID $SYS_CHANNEL  -outputBlock ./genesis.block
+# configtxgen -profile OrdererGenesis -configPath . -channelID $SYS_CHANNEL  -outputBlock ./genesis.block
 
-# Generate channel configuration block
-configtxgen -profile BasicChannel -configPath . -outputCreateChannelTx ./${CHANNEL_NAME}.tx -channelID $CHANNEL_NAME
+# # Generate channel configuration block
+# configtxgen -profile BasicChannel -configPath . -outputCreateChannelTx ./${CHANNEL_NAME}.tx -channelID $CHANNEL_NAME
 
 echo "#######    Generating anchor peer update for MSB1  ##########"
 configtxgen -profile BasicChannel -configPath . -outputAnchorPeersUpdate ./MSB1anchors.tx -channelID $CHANNEL_NAME -asOrg MSB1
