@@ -1,0 +1,48 @@
+<!-- templates/generate_keys.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="column is-4 is-offset-4">
+    <h3 class="title">Send tokens</h3>
+    <div class="box">
+        {% with messages = get_flashed_messages(category_filter=["post_keys", "generate_keys"]) %}
+            {% if messages %}
+                <div class="notification is-danger">
+                    {{ messages[0]}}.
+                </div>
+            {% endif %}
+        {% endwith %}
+        {% with messages = get_flashed_messages(category_filter=["keygen_success"]) %}
+            {% if messages %}
+                <div class="notification is-success">
+                    {{ messages[0]}}.
+                </div>
+            {% endif %}
+        {% endwith %}
+        <form method="POST" action="/send_to_merchant_request">
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" type="number" name="total_alue" placeholder="Total value to be sent" autofocus="">
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" type="string" name="merchant_id" placeholder="Merchant id" autofocus="">
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" type="number" name="total_value" placeholder="Amount" autofocus="">
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" type="datetime-local" name="time" autofocus="">
+                </div>
+            </div>
+            <button class="button is-block is-info is-large is-fullwidth">Generate and Post</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

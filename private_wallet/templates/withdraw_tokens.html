@@ -1,0 +1,53 @@
+<!-- templates/withdraw_tokens.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="column is-4 is-offset-4">
+    <h3 class="title">Withdraw tokens</h3>
+    <div class="box">
+        {% with messages = get_flashed_messages(category_filter=["withdraw_fail"]) %}
+            {% if messages %}
+                <div class="notification is-danger">
+                    {{ messages[0]}}.
+                </div>
+            {% endif %}
+        {% endwith %}
+        {% with messages = get_flashed_messages(category_filter=["withdraw_success"]) %}
+            {% if messages %}
+                <div class="notification is-success">
+                    {{ messages[0]}}.
+                </div>
+            {% endif %}
+        {% endwith %}
+        <form method="POST" action="/withdraw_request">
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" type="string" name="msb" placeholder="Provider MSB" autofocus="">
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" type="string" name="account_id" placeholder="Account id" autofocus="">
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" type="string" name="account_pin" placeholder="Account pin" autofocus="">
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" type="number" name="total_value" placeholder="Total value to withdraw" autofocus="">
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" type="datetime-local" name="time" autofocus="">
+                </div>
+            </div>
+            <button class="button is-block is-info is-large is-fullwidth">Generate and Post</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
