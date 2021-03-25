@@ -1,5 +1,5 @@
 from Crypto import Random as rd
-from user_app.dbs import TokenModel
+from private_wallet.dbs.TokenModel import TokenModel
 import json
 from typing import Tuple
 from charm.toolbox.conversion import Conversion
@@ -7,7 +7,6 @@ from crypto_utils.conversions import SigConversion
 from crypto_utils.signatures import UserBlindSignature
 from user.models.keys import KeyModel
 from Crypto.Hash.SHA256 import SHA256Hash
-import dotenv
 
 def handle_challenges(tokens: TokenModel, resp: dict, timestamp):
     """
@@ -53,7 +52,7 @@ def get_token(provider_id, pubkey, timestamp, expiration, value=1):
 def get_tokens_from_wallet(total_value, timestamp):
     #TODO: implement denominations
     tokens = []
-    for i in range(total_value):
+    for _ in range(total_value):
         #TODO: make this search more efficient
         token = TokenModel.query().filter(TokenModel.expiration_ < timestamp).first()
         if token is None: raise Exception('Insufficient funds for current payment')

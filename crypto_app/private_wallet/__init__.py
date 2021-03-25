@@ -19,11 +19,11 @@ def create_app():
     db.init_app(app)
 
     # blueprint for auth routes in our app
-    from user.auth import auth as auth_blueprint
+    from private_wallet.auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint)
 
     # blueprint for non-auth parts of app
-    from user.main import main as main_blueprint
+    from private_wallet.main import main as main_blueprint
     app.register_blueprint(main_blueprint)
 
     db.create_all(app=app)

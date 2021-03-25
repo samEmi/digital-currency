@@ -4,17 +4,21 @@ from Crypto.Hash.SHA256 import SHA256Hash
 from charm.toolbox.conversion import Conversion
 from charm.toolbox.integergroup import IntegerGroupQ
 import json
-from msb_app.dbs import AccountModel, SigVarsModel
-from flask import current_app
+from msb_app.dbs.AccountModel import AccountModel
+from msb_app.dbs.UserModel import UserModel
+from msb_app.dbs.SigVarsModel import SigVarsModel
+from flask import current_app, flash, jsonify
 from flask_jwt_extended import current_user
 
 signer = current_app.config['signer']
 pubkey = current_app.config['pubkey']
 key_expiration = current_app.config['key_expiration']
 
-def validate_account(account_id, account_pin):
-
-    pass
+def validate_account(account_id, account_pass):
+    user = AccountModel.query.filter_by(account_id=account_id).first()
+    if not user or not user.verify_password(account_pass):
+        raise Exception("Please check your login details and try again!")
+    
 
 def gen_proofs_handler(es, timestamp):
     proofs = []
@@ -49,7 +53,7 @@ def gen_challenge_handler(number:int, timestamp: int):
     :param: number: the number of requested signatures
     :return: data: list of dict containing challenges and the pubkey used by the signer to generate them
     '''
-    sigvars = AccountModel.query.get( ).get_sigvar(timestamp)
+    sigvars = AccountModel.query.get(current_user.id).get_sigvar(timestamp)
     if sigvars:
         raise Exception("Key already exists")
     

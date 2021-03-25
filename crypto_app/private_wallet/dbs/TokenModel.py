@@ -7,7 +7,7 @@ from charm.toolbox.conversion import Conversion
 
 from crypto_utils.conversions import SigConversion
 from crypto_utils.signatures import UserBlindSignature
-from user import db
+from private_wallet import db
 
 
 class TokenModel(db.Model):
@@ -20,14 +20,13 @@ class TokenModel(db.Model):
     interval_timestamp_ = db.Column(db.Integer)
     proof_hash_ = db.Column(db.String)
 
-    def __init__(self, provider_type: int, p_id: int, value: int = 1, signer: UserBlindSignature = None,
-                 interval: int = None, expiration: datetime = None):
-        check = TokenModel.query.filter_by(provider_type_=provider_type, p_id_=p_id, policy_=policy,
+    def __init__(self, p_id: int, value: int = 1, signer: UserBlindSignature = None,
+                 interval: int = None, expiration: 'datetime' = None):
+        check = TokenModel.query.filter_by(p_id_=p_id, policy_=policy,
                                          interval_timestamp_=interval)
         if check.first() is not None:
             raise Exception("TokenModel already exists")
         else:
-            self.type = provider_type
             self.p_id_ = p_id
             self.value_ = value
             self.key_pair_ = ECC.generate(curve='P-256').export_key(format='DER')

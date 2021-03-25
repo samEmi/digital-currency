@@ -3,17 +3,15 @@
 from flask_login import UserMixin
 from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
-
-
-from cp import db
+from msb_app import db
 
 
 class AccountModel(UserMixin, db.Model):
     __tablename__ = 'users'
-
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), unique=True, nullable=False)
-    password = db.Column(db.String(100), nullable=False)
+    account_id = db.Column(db.String(100), unique=True, nullable=False)
+    account_pass = db.Column(db.String(100), nullable=False)
     name = db.Column(db.String(1000), nullable=False)
     sigvars = relationship('SigVarsModel')
 
@@ -32,7 +30,7 @@ class AccountModel(UserMixin, db.Model):
         self.password = generate_password_hash(password, method='sha256')
 
     def verify_password(self, password):
-        return check_password_hash(self.password, password)
+        return check_password_hash(self.account_pass, password)
 
     def delete(self):
         db.session.delete(self)

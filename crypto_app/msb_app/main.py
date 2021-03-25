@@ -1,17 +1,18 @@
-from flask import request, current_app, jsonify, flash
-from msb_app.utils import *
+from flask import request, current_app, jsonify, flash, Blueprint
+from msb_app.utils import validate_account, gen_challenge_handler, gen_proofs_handler, verify_blind_signature
 import json
 import requests
 from crypto_utils.signatures import SignerBlindSignature
 from crypto_utils.conversions import SigConversion
 
+main = Blueprint('main', __name__, template_folder='templates')
 
 @main.route('/key_setup', methods=['GET'])
 def key_setup():
     '''Function called when the user wallet app requests to withdraw tokens from given account'''
     
     account_id = request.args.get('account_id')
-    account_pin = request.args.get('account_pin')
+    account_pin = request.args.get('account_pass')
     number = request.args.get('num_tokens')
     timestamp = request.args.get('timestamp')
 
@@ -22,11 +23,12 @@ def key_setup():
         return resp, 400
 
     try:
+        #TODO: add session and return access tokens
         validate_account(account_id, account_pin)
         return gen_challenge_handler(number, timestamp), 200
     except Exception as e:
         resp = jsonify({
-            'message': "Unauthorised: Invalid credentials."
+            'message': "Unauthorised: " + e
         })
         return resp, 400
 

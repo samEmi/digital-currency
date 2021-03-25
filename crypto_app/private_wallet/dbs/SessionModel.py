@@ -1,5 +1,4 @@
 # SessionModel.py
-
 from private_wallet import db
 
 class SessionModel(db.Model):
