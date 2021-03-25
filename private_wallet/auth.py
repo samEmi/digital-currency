@@ -2,7 +2,9 @@
 import requests
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask import current_app
-from user.models.sessions import SessionModel
+from private_wallet.dbs.SessionModel import SessionModel
+from flask_jwt_extended import create_access_token, create_refresh_token
+from datetime import timedelta
 
 auth = Blueprint('auth', __name__, template_folder='templates')
 
@@ -16,18 +18,19 @@ def login_post():
     data = {
         'username':request.form.get('username'),
         'password': request.form.get('password'),
-        'remember': request.form.get('remember')
     }
 
-    res = requests.post("http://{}/login".format(current_app.config['cp_host']), json=data)
-    data = res.json()
-    if res.status_code == 200:
+    if data['username'] == current_app.config['username'] \
+       and data['password'] == current_app.config['password']:
+        #TODO: are these access tokens necessary
+        access_token = create_access_token(identity=data['username'], expires_delta=timedelta(minutes=30))
+        refresh_token = create_refresh_token(identity=data['username'], expires_delta=timedelta(minutes=30))
         SessionModel.delete()
-        SessionModel(access_token=data.get('access'),
-                     refresh_token=data.get('refresh')).save()
+        SessionModel(access_token=access_token,
+                     refresh_token=refresh_token).save()
         return redirect(url_for('main.withdraw_tokens_from_acc'))
     else:
-        flash(data.get('message'), 'login')
+        flash('Invalid login credentials', 'login')
         return render_template('login.html')
 
 
@@ -35,23 +38,15 @@ def login_post():
 def signup():
     return render_template('signup.html')
 
-
 @auth.route('/signup', methods=['POST'])
 def signup_post():
     data = {
         'username': request.form.get('username'),
         'password': request.form.get('password')
     }
-
-    res = requests.post("http://{}/signup".format(current_app.config['cp_host']), json=data)
-
-    data = res.json()
-    if res.status_code == 201:
-        return redirect(url_for('auth.login'))
-    else:
-        flash(data.get('message'), 'signup')
-        return render_template('signup.html')
-
+    current_app.config['username'] = data['username']
+    current_app.config['password'] = data['password']
+    return redirect(url_for('auth.login'))
 
 @auth.route('/logout')
 def logout():
