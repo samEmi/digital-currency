@@ -22,8 +22,7 @@ class TokenModel(db.Model):
 
     def __init__(self, p_id: int, value: int = 1, signer: UserBlindSignature = None,
                  interval: int = None, expiration: 'datetime' = None):
-        check = TokenModel.query.filter_by(p_id_=p_id, policy_=policy,
-                                         interval_timestamp_=interval)
+        check = TokenModel.query.filter_by(p_id_=p_id, interval_timestamp_=interval)
         if check.first() is not None:
             raise Exception("TokenModel already exists")
         else:
@@ -57,7 +56,7 @@ class TokenModel(db.Model):
         elif self.provider_type_ == 2:
             return 'AP'
         else:
-            raise ValueError("Unexpected value for provider_type in user.TokenModel")
+            raise ValueError("Unexpected value for provider_type in private_walletTokenModel")
 
     @type.setter
     def type(self, p_type: str):
@@ -66,7 +65,7 @@ class TokenModel(db.Model):
         elif p_type == 'AP':
             self.provider_type_ = 2
         else:
-            raise Exception('Invalid provider_type assignment in user.TokenModel')
+            raise Exception('Invalid provider_type assignment in private_walletTokenModel')
 
     @property
     def p_id(self) -> int:

@@ -1,11 +1,10 @@
 from Crypto import Random as rd
-from private_wallet.dbs.TokenModel import TokenModel
+from .dbs.TokenModel import TokenModel
 import json
 from typing import Tuple
 from charm.toolbox.conversion import Conversion
 from crypto_utils.conversions import SigConversion
 from crypto_utils.signatures import UserBlindSignature
-from user.models.keys import KeyModel
 from Crypto.Hash.SHA256 import SHA256Hash
 
 def handle_challenges(tokens: TokenModel, resp: dict, timestamp):

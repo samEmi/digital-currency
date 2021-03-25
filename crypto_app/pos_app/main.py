@@ -1,17 +1,17 @@
 
-from user_app.utils import *
 import json
 import os
 from datetime import timedelta
 import requests
-from flask import request, Response, jsonify, render_template, redirect, url_for, flash
+from flask import request, Response, jsonify, render_template, redirect, url_for, flash, Blueprint
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, current_user
 from crypto_utils.conversions import SigConversion
-from pos_app.dbs import Contract
-from pos_app.utils import *
+from dbs.Contract import Contract
+from utils import *
 from flask import current_app
 import dateutil.parser
 
+main = Blueprint('main', __name__, template_folder='templates')
 
 @main.route('/request_contract', methods=['GET'])
 def request_contract():
@@ -43,7 +43,7 @@ def send_tokens():
     nonce = data.get('nonce')
     contract = Contract.find(nonce)
     if contract == None: return jsonify({'message': 'No corresponding contract'}), 500
-
+    #TODO: think about whether this check is absolutely redundant since singnatures will be validated by msbs as well?
     singatures = data.get('signatures')
     if contract.verify_signature(singatures) == False: 
         return jsonify({'message': 'Invalid Signature'}), 400
@@ -55,8 +55,8 @@ def send_tokens():
     # connect to msb which will validate tokens against database of spent tokens
     msb_id = current_app.config['msb_id']
     params = {
-        'account_id':
-        'account_pin':
+        'account_id': current_user.config['account_id'],
+        'account_pass': current_user.config['account_pass'],
     }
     
     res = requests.post('http://{}/receive_tokens_into_account'.format(msb_id), json=json.dumps(data), params=params)
