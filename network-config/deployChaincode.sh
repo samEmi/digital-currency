@@ -1,24 +1,24 @@
 export CORE_PEER_TLS_ENABLED=true
-export ORDERER_CA=${PWD}/crypto-config/ordererOrganizations/example.com/orderers/orderer1.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+export ORDERER_CA=${PWD}/artifacts/channel/crypto-config/ordererOrganizations/example.com/orderers/orderer1.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
 
-export PEER0_MSB1_CA=${PWD}/crypto-config/peerOrganizations/msb1.example.com/peers/peer0.msb1.example.com/tls/ca.crt
-export PEER0_MSB2_CA=${PWD}/crypto-config/peerOrganizations/msb2.example.com/peers/peer0.msb2.example.com/tls/ca.crt
-export PEER0_MSB3_CA=${PWD}/crypto-config/peerOrganizations/msb3.example.com/peers/peer0.msb3.example.com/tls/ca.crt
-export PEER0_MSB4_CA=${PWD}/crypto-config/peerOrganizations/msb4.example.com/peers/peer0.msb4.example.com/tls/ca.crt
-export PEER0_MSB5_CA=${PWD}/crypto-config/peerOrganizations/msb5.example.com/peers/peer0.msb5.example.com/tls/ca.crt
+export PEER0_MSB1_CA=${PWD}/artifacts/channel/crypto-config/peerOrganizations/msb1.example.com/peers/peer0.msb1.example.com/tls/ca.crt
+export PEER0_MSB2_CA=${PWD}/artifacts/channel/crypto-config/peerOrganizations/msb2.example.com/peers/peer0.msb2.example.com/tls/ca.crt
+export PEER0_MSB3_CA=${PWD}/artifacts/channel/crypto-config/peerOrganizations/msb3.example.com/peers/peer0.msb3.example.com/tls/ca.crt
+# export PEER0_MSB4_CA=${PWD}/artifacts/channel/crypto-config/peerOrganizations/msb4.example.com/peers/peer0.msb4.example.com/tls/ca.crt
+# export PEER0_MSB5_CA=${PWD}/artifacts/channel/crypto-config/peerOrganizations/msb5.example.com/peers/peer0.msb5.example.com/tls/ca.crt
 
 
+export FABRIC_CFG_PATH=${PWD}/artifacts/channel/config/
 
-export FABRIC_CFG_PATH=${PWD}/config/
-
-export CHANNEL_NAME=mychannelna
+export PRIVATE_DATA_CONFIG=${PWD}/artifacts/private-data/collections_config.json
+export CHANNEL_NAME=mychannel
 
 # Orderer
 
 setGlobalsForOrderer(){
     export CORE_PEER_LOCALMSPID="OrdererMSP"
-    export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/crypto-config/ordererOrganizations/example.com/orderers/orderer1.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/ordererOrganizations/example.com/users/Admin@example.com/msp
+    export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/artifacts/channel/crypto-config/ordererOrganizations/example.com/orderers/orderer1.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/artifacts/channel/crypto-config/ordererOrganizations/example.com/users/Admin@example.com/msp
     
 }
 
@@ -27,14 +27,14 @@ setGlobalsForOrderer(){
 setGlobalsForPeer0Org1(){
     export CORE_PEER_LOCALMSPID="MSB1"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_MSB1_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/msb1.example.com/users/Admin@msb1.example.com/msp
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/artifacts/channel/crypto-config/peerOrganizations/msb1.example.com/users/Admin@msb1.example.com/msp
     export CORE_PEER_ADDRESS=localhost:7051
 }
 
 setGlobalsForPeer1Org1(){
     export CORE_PEER_LOCALMSPID="MSB1"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_MSB1_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/msb1.example.com/users/Admin@msb1.example.com/msp
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/artifacts/channel/crypto-config/peerOrganizations/msb1.example.com/users/Admin@msb1.example.com/msp
     export CORE_PEER_ADDRESS=localhost:8051
     
 }
@@ -42,7 +42,7 @@ setGlobalsForPeer1Org1(){
 setGlobalsForPeer0Org2(){
     export CORE_PEER_LOCALMSPID="MSB2"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_MSB2_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/msb2.example.com/users/Admin@msb2.example.com/msp
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/artifacts/channel/crypto-config/peerOrganizations/msb2.example.com/users/Admin@msb2.example.com/msp
     export CORE_PEER_ADDRESS=localhost:9051
     
 }
@@ -50,7 +50,7 @@ setGlobalsForPeer0Org2(){
 setGlobalsForPeer1Org2(){
     export CORE_PEER_LOCALMSPID="MSB2"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_MSB2_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/msb2.example.com/users/Admin@msb2.example.com/msp
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/artifacts/channel/crypto-config/peerOrganizations/msb2.example.com/users/Admin@msb2.example.com/msp
     export CORE_PEER_ADDRESS=localhost:10051
     
 }
@@ -58,7 +58,7 @@ setGlobalsForPeer1Org2(){
 setGlobalsForPeer0Org3(){
     export CORE_PEER_LOCALMSPID="MSB3"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_MSB3_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/msb3.example.com/users/Admin@msb3.example.com/msp
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/artifacts/channel/crypto-config/peerOrganizations/msb3.example.com/users/Admin@msb3.example.com/msp
     export CORE_PEER_ADDRESS=localhost:11051
     
 }
@@ -66,56 +66,56 @@ setGlobalsForPeer0Org3(){
 setGlobalsForPeer1Org3(){
     export CORE_PEER_LOCALMSPID="MSB3"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_MSB3_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/msb3.example.com/users/Admin@msb3.example.com/msp
+    export CORE_PEER_MSPCONFIGPATH=${PWD}/artifacts/channel/crypto-config/peerOrganizations/msb3.example.com/users/Admin@msb3.example.com/msp
     export CORE_PEER_ADDRESS=localhost:12051
     
 }
 
-setGlobalsForPeer0Org4(){
-    export CORE_PEER_LOCALMSPID="MSB4"
-    export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_MSB4_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/msb4.example.com/users/Admin@msb4.example.com/msp
-    export CORE_PEER_ADDRESS=localhost:13051
+# setGlobalsForPeer0Org4(){
+#     export CORE_PEER_LOCALMSPID="MSB4"
+#     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_MSB4_CA
+#     export CORE_PEER_MSPCONFIGPATH=${PWD}/artifacts/channel/crypto-config/peerOrganizations/msb4.example.com/users/Admin@msb4.example.com/msp
+#     export CORE_PEER_ADDRESS=localhost:13051
     
-}
+# }
 
-setGlobalsForPeer1Org4(){
-    export CORE_PEER_LOCALMSPID="MSB4"
-    export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_MSB4_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/msb4.example.com/users/Admin@msb4.example.com/msp
-    export CORE_PEER_ADDRESS=localhost:14051
+# setGlobalsForPeer1Org4(){
+#     export CORE_PEER_LOCALMSPID="MSB4"
+#     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_MSB4_CA
+#     export CORE_PEER_MSPCONFIGPATH=${PWD}/artifacts/channel/crypto-config/peerOrganizations/msb4.example.com/users/Admin@msb4.example.com/msp
+#     export CORE_PEER_ADDRESS=localhost:14051
     
-}
+# }
 
-setGlobalsForPeer0Org5(){
-    export CORE_PEER_LOCALMSPID="MSB5"
-    export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_MSB5_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/msb5.example.com/users/Admin@msb5.example.com/msp
-    export CORE_PEER_ADDRESS=localhost:15051
+# setGlobalsForPeer0Org5(){
+#     export CORE_PEER_LOCALMSPID="MSB5"
+#     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_MSB5_CA
+#     export CORE_PEER_MSPCONFIGPATH=${PWD}/artifacts/channel/crypto-config/peerOrganizations/msb5.example.com/users/Admin@msb5.example.com/msp
+#     export CORE_PEER_ADDRESS=localhost:15051
     
-}
+# }
 
-setGlobalsForPeer1Org5(){
-    export CORE_PEER_LOCALMSPID="MSB5"
-    export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_MSB5_CA
-    export CORE_PEER_MSPCONFIGPATH=${PWD}/crypto-config/peerOrganizations/msb5.example.com/users/Admin@msb5.example.com/msp
-    export CORE_PEER_ADDRESS=localhost:16051
+# setGlobalsForPeer1Org5(){
+#     export CORE_PEER_LOCALMSPID="MSB5"
+#     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_MSB5_CA
+#     export CORE_PEER_MSPCONFIGPATH=${PWD}/artifacts/channel/crypto-config/peerOrganizations/msb5.example.com/users/Admin@msb5.example.com/msp
+#     export CORE_PEER_ADDRESS=localhost:16051
     
-}
+# }
 
 presetup() {
     echo Vendoring Go dependencies ...
-    pushd ./chaincode-go
+    pushd ./artifacts/src/github.com/erc-20/go
     GO111MODULE=on go mod vendor
     popd
     echo Finished vendoring Go dependencies
 }
 # presetup
 
-CHANNEL_NAME="mychannelna"
+CHANNEL_NAME="mychannel"
 CC_RUNTIME_LANGUAGE="golang"
 VERSION="1"
-CC_SRC_PATH="./chaincode-go"
+CC_SRC_PATH="./artifacts/src/github.com/erc-20/go"
 CC_NAME="token-erc-20"
 
 packageChaincode() {
@@ -134,41 +134,41 @@ installChaincode() {
     peer lifecycle chaincode install ${CC_NAME}.tar.gz
     echo "===================== Chaincode is installed on peer0.org1 ===================== "
 
-    setGlobalsForPeer1Org1
-    peer lifecycle chaincode install ${CC_NAME}.tar.gz
-    echo "===================== Chaincode is installed on peer1.org1 ===================== "
+    # setGlobalsForPeer1Org1
+    # peer lifecycle chaincode install ${CC_NAME}.tar.gz
+    # echo "===================== Chaincode is installed on peer1.org1 ===================== "
 
     setGlobalsForPeer0Org2
     peer lifecycle chaincode install ${CC_NAME}.tar.gz
     echo "===================== Chaincode is installed on peer0.org2 ===================== "
 
-    setGlobalsForPeer1Org2
-    peer lifecycle chaincode install ${CC_NAME}.tar.gz
-    echo "===================== Chaincode is installed on peer1.org2 ===================== "
+    # setGlobalsForPeer1Org2
+    # peer lifecycle chaincode install ${CC_NAME}.tar.gz
+    # echo "===================== Chaincode is installed on peer1.org2 ===================== "
 
     setGlobalsForPeer0Org3
     peer lifecycle chaincode install ${CC_NAME}.tar.gz
     echo "===================== Chaincode is installed on peer0.org3 ===================== "
 
-    setGlobalsForPeer1Org3
-    peer lifecycle chaincode install ${CC_NAME}.tar.gz
-    echo "===================== Chaincode is installed on peer1.org3 ===================== "
+    # setGlobalsForPeer1Org3
+    # peer lifecycle chaincode install ${CC_NAME}.tar.gz
+    # echo "===================== Chaincode is installed on peer1.org3 ===================== "
 
-    setGlobalsForPeer0Org4
-    peer lifecycle chaincode install ${CC_NAME}.tar.gz
-    echo "===================== Chaincode is installed on peer0.org4 ===================== "
+    # setGlobalsForPeer0Org4
+    # peer lifecycle chaincode install ${CC_NAME}.tar.gz
+    # echo "===================== Chaincode is installed on peer0.org4 ===================== "
 
-    setGlobalsForPeer1Org4
-    peer lifecycle chaincode install ${CC_NAME}.tar.gz
-    echo "===================== Chaincode is installed on peer1.org4 ===================== "
+    # setGlobalsForPeer1Org4
+    # peer lifecycle chaincode install ${CC_NAME}.tar.gz
+    # echo "===================== Chaincode is installed on peer1.org4 ===================== "
 
-    setGlobalsForPeer0Org5
-    peer lifecycle chaincode install ${CC_NAME}.tar.gz
-    echo "===================== Chaincode is installed on peer0.org5 ===================== "
+    # setGlobalsForPeer0Org5
+    # peer lifecycle chaincode install ${CC_NAME}.tar.gz
+    # echo "===================== Chaincode is installed on peer0.org5 ===================== "
 
-    setGlobalsForPeer1Org5
-    peer lifecycle chaincode install ${CC_NAME}.tar.gz
-    echo "===================== Chaincode is installed on peer1.org5 ===================== "
+    # setGlobalsForPeer1Org5
+    # peer lifecycle chaincode install ${CC_NAME}.tar.gz
+    # echo "===================== Chaincode is installed on peer1.org5 ===================== "
 
 }
 
@@ -192,18 +192,11 @@ queryInstalled() {
 approveForMyOrg1() {
     setGlobalsForPeer0Org1
     # set -x
-    # peer lifecycle chaincode approveformyorg -o localhost:7050 \
-    #     --ordererTLSHostnameOverride orderer1.example.com --tls \
-    #     --collections-config $PRIVATE_DATA_CONFIG \
-    #     --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} --version ${VERSION} \
-    #     --init-required --package-id ${PACKAGE_ID} \
-    #     --sequence ${VERSION}
-
     peer lifecycle chaincode approveformyorg -o localhost:7050 \
-    --ordererTLSHostnameOverride orderer1.example.com --tls $CORE_PEER_TLS_ENABLED\
-    --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} --version ${VERSION} \
-    --init-required --package-id ${PACKAGE_ID} \
-    --sequence ${VERSION}
+        --ordererTLSHostnameOverride orderer1.example.com --tls \
+        --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} --version ${VERSION} \
+        --init-required --package-id ${PACKAGE_ID} \
+        --sequence ${VERSION}
     # set +x
 
     echo "===================== chaincode approved from org 1 ===================== "
@@ -259,35 +252,35 @@ approveForMyOrg3() {
     echo "===================== chaincode approved from org 2 ===================== "
 }
 
-# approveForMyOrg3
+# # approveForMyOrg3
 
 
-approveForMyOrg4() {
-    setGlobalsForPeer0Org4
+# approveForMyOrg4() {
+#     setGlobalsForPeer0Org4
 
-    peer lifecycle chaincode approveformyorg -o localhost:7050 \
-        --ordererTLSHostnameOverride orderer1.example.com --tls $CORE_PEER_TLS_ENABLED \
-        --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} \
-        --version ${VERSION} --init-required --package-id ${PACKAGE_ID} \
-        --sequence ${VERSION}
+#     peer lifecycle chaincode approveformyorg -o localhost:7050 \
+#         --ordererTLSHostnameOverride orderer1.example.com --tls $CORE_PEER_TLS_ENABLED \
+#         --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} \
+#         --version ${VERSION} --init-required --package-id ${PACKAGE_ID} \
+#         --sequence ${VERSION}
 
-    echo "===================== chaincode approved from org 2 ===================== "
-}
+#     echo "===================== chaincode approved from org 2 ===================== "
+# }
 
-# approveForMyOrg4
+# # approveForMyOrg4
 
 
-approveForMyOrg5() {
-    setGlobalsForPeer0Org5
+# approveForMyOrg5() {
+#     setGlobalsForPeer0Org5
 
-    peer lifecycle chaincode approveformyorg -o localhost:7050 \
-        --ordererTLSHostnameOverride orderer1.example.com --tls $CORE_PEER_TLS_ENABLED \
-        --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} \
-        --version ${VERSION} --init-required --package-id ${PACKAGE_ID} \
-        --sequence ${VERSION}
+#     peer lifecycle chaincode approveformyorg -o localhost:7050 \
+#         --ordererTLSHostnameOverride orderer1.example.com --tls $CORE_PEER_TLS_ENABLED \
+#         --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} \
+#         --version ${VERSION} --init-required --package-id ${PACKAGE_ID} \
+#         --sequence ${VERSION}
 
-    echo "===================== chaincode approved from org 2 ===================== "
-}
+#     echo "===================== chaincode approved from org 2 ===================== "
+# }
 
 # approveForMyOrg5
 
@@ -301,6 +294,9 @@ checkCommitReadyness() {
 }
 
 # checkCommitReadyness
+        # --peerAddresses localhost:11051 --tlsRootCertFiles $PEER0_MSB3_CA \
+        # --peerAddresses localhost:13051 --tlsRootCertFiles $PEER0_MSB4_CA \
+        # --peerAddresses localhost:15051 --tlsRootCertFiles $PEER0_MSB5_CA \
 
 commitChaincodeDefination() {
     setGlobalsForPeer0Org1
@@ -310,8 +306,6 @@ commitChaincodeDefination() {
         --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_MSB1_CA \
         --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_MSB2_CA \
         --peerAddresses localhost:11051 --tlsRootCertFiles $PEER0_MSB3_CA \
-        --peerAddresses localhost:13051 --tlsRootCertFiles $PEER0_MSB4_CA \
-        --peerAddresses localhost:15051 --tlsRootCertFiles $PEER0_MSB5_CA \
         --version ${VERSION} --sequence ${VERSION} --init-required
 }
 
@@ -324,6 +318,9 @@ queryCommitted() {
 }
 
 # queryCommitted
+        # --peerAddresses localhost:11051 --tlsRootCertFiles $PEER0_MSB3_CA \
+        # --peerAddresses localhost:13051 --tlsRootCertFiles $PEER0_MSB4_CA \
+        # --peerAddresses localhost:15051 --tlsRootCertFiles $PEER0_MSB5_CA \
 
 chaincodeInvokeInit() {
     setGlobalsForPeer0Org1
@@ -334,11 +331,12 @@ chaincodeInvokeInit() {
         --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_MSB1_CA \
         --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_MSB2_CA \
         --peerAddresses localhost:11051 --tlsRootCertFiles $PEER0_MSB3_CA \
-        --peerAddresses localhost:13051 --tlsRootCertFiles $PEER0_MSB4_CA \
-        --peerAddresses localhost:15051 --tlsRootCertFiles $PEER0_MSB5_CA \
         --isInit -c '{"Args":[]}'
 
 }
+
+
+
 
 # chaincodeInvokeInit
 
@@ -354,7 +352,7 @@ chaincodeInvoke() {
 
     ## Create Car
     # peer chaincode invoke -o localhost:7050 \
-    #     --ordererTLSHostnameOverride orderer.example.com \
+    #     --ordererTLSHostnameOverride orderer1.example.com \
     #     --tls $CORE_PEER_TLS_ENABLED \
     #     --cafile $ORDERER_CA \
     #     -C $CHANNEL_NAME -n ${CC_NAME}  \
@@ -363,27 +361,29 @@ chaincodeInvoke() {
     #     --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG2_CA   \
     #     -c '{"function": "createCar","Args":["Car-ABCDEEE", "Audi", "R8", "Red", "Pavan"]}'
 
-    ## Init ledger
+    # Init ledger
+    #------------ adding 50
     peer chaincode invoke -o localhost:7050 \
-        --ordererTLSHostnameOverride orderer.example.com \
+        --ordererTLSHostnameOverride orderer1.example.com \
         --tls $CORE_PEER_TLS_ENABLED \
         --cafile $ORDERER_CA \
         -C $CHANNEL_NAME -n ${CC_NAME} \
         --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_MSB1_CA \
         --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_MSB2_CA \
-        -c '{"function": "initLedger","Args":[]}'
+        --peerAddresses localhost:11051 --tlsRootCertFiles $PEER0_MSB3_CA \
+        -c '{"function": "mint","Args": ["50"]}'
 
     ## Add private data
-    export CAR=$(echo -n "{\"key\":\"1111\", \"make\":\"Tesla\",\"model\":\"Tesla A1\",\"color\":\"White\",\"owner\":\"pavan\",\"price\":\"10000\"}" | base64 | tr -d \\n)
-    peer chaincode invoke -o localhost:7050 \
-        --ordererTLSHostnameOverride orderer.example.com \
-        --tls $CORE_PEER_TLS_ENABLED \
-        --cafile $ORDERER_CA \
-        -C $CHANNEL_NAME -n ${CC_NAME} \
-        --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
-        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG2_CA \
-        -c '{"function": "createPrivateCar", "Args":[]}' \
-        --transient "{\"car\":\"$CAR\"}"
+    # export CAR=$(echo -n "{\"key\":\"1111\", \"make\":\"Tesla\",\"model\":\"Tesla A1\",\"color\":\"White\",\"owner\":\"pavan\",\"price\":\"10000\"}" | base64 | tr -d \\n)
+    # peer chaincode invoke -o localhost:7050 \
+    #     --ordererTLSHostnameOverride orderer1.example.com \
+    #     --tls $CORE_PEER_TLS_ENABLED \
+    #     --cafile $ORDERER_CA \
+    #     -C $CHANNEL_NAME -n ${CC_NAME} \
+    #     --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
+    #     --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG2_CA \
+    #     -c '{"function": "createPrivateCar", "Args":[]}' \
+    #     --transient "{\"car\":\"$CAR\"}"
 }
 
 # chaincodeInvoke
@@ -395,7 +395,7 @@ chaincodeQuery() {
     # peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"Args":["queryAllCars"]}'
 
     # Query Car by Id
-    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "queryCar","Args":["CAR0"]}'
+    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "TotalSupply","Args":[]}'
     #'{"Args":["GetSampleData","Key1"]}'
 
     # Query Private Car by Id
@@ -407,22 +407,22 @@ chaincodeQuery() {
 
 # Run this function if you add any new dependency in chaincode
 presetup
-
 packageChaincode
 installChaincode
 queryInstalled
 approveForMyOrg1
 approveForMyOrg2
 approveForMyOrg3
-approveForMyOrg4
-approveForMyOrg5
+
+# approveForMyOrg4
+# approveForMyOrg5
+
 checkCommitReadyness
 commitChaincodeDefination
 queryCommitted
+chaincodeInvokeInit
 
-
-# chaincodeInvokeInit
-# sleep 5
-# chaincodeInvoke
-# sleep 3
-# chaincodeQuery
+sleep 5
+chaincodeInvoke
+sleep 3
+chaincodeQuery
