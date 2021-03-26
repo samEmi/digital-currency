@@ -79,7 +79,11 @@ def validate_tokens():
 #! connect to ledger
 @main.route('/receive_tokens_into_account', methods=['POST'])
 def receive_tokens_into_account():
-    # validate token ownership and check double-spending database
+    data = json.loads(request.get_json())
+    signatures = data['signatures']
+    blind_signatures = data['blind_signatures']
+    signers = data['signers']
+    messages = data['messages']
     pass
 
 
