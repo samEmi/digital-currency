@@ -1,4 +1,4 @@
-from private_wallet import create_app
+from msb_app import create_app
 
 app = create_app()
 
