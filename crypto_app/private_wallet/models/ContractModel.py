@@ -5,8 +5,8 @@ from Crypto.Hash import SHA256
 from Crypto.PublicKey import ECC
 from Crypto.Signature import DSS
 from charm.toolbox.conversion import Conversion
-from pos_app import db
-from pos_app.utils import *
+from private_wallet import db
+from private_wallet.utils import *
 from crypto_utils.conversions import SigConversion
 from crypto_utils.signatures import BlindSignatureVerifier
 
