@@ -59,10 +59,10 @@ def withdraw_tokens_from_acc(headers):
         return redirect(url_for('main.withdraw_tokens_from_acc'))
     
     # generate list of tokens
-    tokens = [get_token(provider_id=msb_id, pub_key=pub_key, 
+    tokens = [get_token(provider_id=msb_id, pub_key=res.get('pub_key'), 
                         timestamp=params['timestamp'], 
                         expiration=res.get('expiration')) 
-                        for pub_key, value in zip(res['pub_key'], params['values'])
+                        for _ in range(params['total_value'])
             ]    
     
     try:
@@ -73,17 +73,17 @@ def withdraw_tokens_from_acc(headers):
             if res.status_code == 201:
                 data = res.json()
                 save_tokens(data, tokens, msb_id)
-                flash("Tokens have been signed")
-                return render_template('withdraw_tokens.html', 'withdraw_success')
+                flash("Tokens have been signed", 'withdraw_success'))
+                return render_template('withdraw_tokens.html'
             else:
-                flash("Invalid input")
-                return render_template('withdraw_tokens.html', 'withdraw_fail')
+                flash("Invalid input", 'withdraw_fail')
+                return render_template('withdraw_tokens.html')
         except Exception as e:
-            flash(str(e), "post_tokens")
-            return render_template('withdraw_tokens.html', 'withdraw_fail')
+            flash(str(e), 'withdraw_fail')
+            return render_template('withdraw_tokens.html')
     except Exception as e:
-        flash(str(e), "post_tokens")
-        return render_template('withdraw_tokens.html', 'withdraw_fail')
+        flash(str(e), "post_tokens", 'withdraw_fail')
+        return render_template('withdraw_tokens.html')
 
 
 @main.route('/send_to_merchant_request', methods=['POST'])

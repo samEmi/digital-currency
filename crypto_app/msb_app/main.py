@@ -23,9 +23,15 @@ def key_setup():
         return resp, 400
 
     try:
-        #TODO: add session and return access tokens
-        validate_account(account_id, account_pin)
-        return gen_challenge_handler(number, timestamp), 200
+        access = validate_account(account_id, account_pin)
+        sigvar = gen_challenge_handler(number, timestamp), 200
+        resp = jsonify({
+            'access': access['access'],
+            'refresh': access['refresh'],
+            'pub_key': sigvar['pub_key'],
+            'challenge': sigvar['challenge']
+        })
+        return resp, 201
     except Exception as e:
         resp = jsonify({
             'message': "Unauthorised: " + e

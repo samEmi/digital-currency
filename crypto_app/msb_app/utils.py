@@ -7,8 +7,11 @@ import json
 from msb_app.models.AccountModel import AccountModel
 from msb_app.models.UserModel import UserModel
 from msb_app.models.SigVarsModel import SigVarsModel
+from msb_app.utils import *
 from flask import current_app, flash, jsonify
 from flask_jwt_extended import current_user
+from flask_jwt_extended import create_access_token, create_refresh_token
+from datetime import timedelta
 
 signer = current_app.config['signer']
 pubkey = current_app.config['pubkey']
@@ -16,9 +19,19 @@ key_expiration = current_app.config['key_expiration']
 
 def validate_account(account_id, account_pass):
     user = AccountModel.query.filter_by(account_id=account_id).first()
+    
     if not user or not user.verify_password(account_pass):
         raise Exception("Please check your login details and try again!")
     
+    access_token = create_access_token(identity=user.id, expires_delta=timedelta(minutes=30))
+    refresh_token = create_refresh_token(identity=user.id, expires_delta=timedelta(minutes=30))
+
+    resp = jsonify({
+        'access': access_token,
+        'refresh': refresh_token
+    })
+
+    return resp, 200
 
 def gen_proofs_handler(es, timestamp):
     proofs = []
@@ -63,15 +76,6 @@ def gen_challenge_handler(number:int, timestamp: int):
     sigvars = SigVarsModel(timestamp=timestamp, u=signer.u, d=signer.d, s1=signer.s1, s2=signer.s2, user_id=current_user.id)
     sigvars.save_to_db()
     
-    # challenges, public_keys = [], []
-    # for i in range(number):
-    #     challenge = SigConversion.convert_dict_strlist(signer.get_challenge())  
-    #     public_keys.append(pubkey)
-    #     challenges.append(challenge)
-    #     sigvars = SigVarsModel(timestamp=timestamp, policy=policy.policy, u=signer.u, d=signer.d, s1=signer.s1,
-    #                            s2=signer.s2, user_id=current_user.id)
-    #     sigvars.save_to_db()
-
     resp = {
         'timestamp': timestamp,
         'pub_key': pubkey,
