@@ -4,9 +4,9 @@ from Crypto.Hash.SHA256 import SHA256Hash
 from charm.toolbox.conversion import Conversion
 from charm.toolbox.integergroup import IntegerGroupQ
 import json
-from msb_app.dbs.AccountModel import AccountModel
-from msb_app.dbs.UserModel import UserModel
-from msb_app.dbs.SigVarsModel import SigVarsModel
+from msb_app.models.AccountModel import AccountModel
+from msb_app.models.UserModel import UserModel
+from msb_app.models.SigVarsModel import SigVarsModel
 from flask import current_app, flash, jsonify
 from flask_jwt_extended import current_user
 
