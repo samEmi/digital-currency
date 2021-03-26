@@ -9,10 +9,11 @@ import dotenv
 from crypto_utils.conversions import SigConversion
 from user.models.TokenModel import TokenModel
 from user.models.ContractModel import Contract
+from private_wallet.models.SessionModel import SessionModel
 from flask import current_app
-# from private_wallet.dbs.sessions import SessionModel
-from private_wallet.utils import handle_challenge, handle_response_hashes, prove_owner, validate_block, \
-    handle_challenge_ap, validate_proof
+from private_wallet.utils import *
+
+
 import dateutil.parser
 
 main = Blueprint('main', __name__, template_folder='templates')
