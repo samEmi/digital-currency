@@ -77,7 +77,6 @@ def gen_challenge_handler(number:int, timestamp: int):
     sigvars.save_to_db()
     
     resp = {
-        'timestamp': timestamp,
         'pub_key': pubkey,
         'challenge': challenge,
         'expiration': key_expiration

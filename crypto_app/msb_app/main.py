@@ -24,12 +24,13 @@ def key_setup():
 
     try:
         access = validate_account(account_id, account_pin)
-        sigvar = gen_challenge_handler(number, timestamp), 200
+        sigvar = gen_challenge_handler(number, timestamp)
         resp = jsonify({
             'access': access['access'],
             'refresh': access['refresh'],
             'pub_key': sigvar['pub_key'],
-            'challenge': sigvar['challenge']
+            'challenge': sigvar['challenge'],
+            'expiration': sigvar['expiration']
         })
         return resp, 201
     except Exception as e:

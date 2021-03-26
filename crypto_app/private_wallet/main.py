@@ -8,7 +8,6 @@ import dotenv
 from crypto_utils.conversions import SigConversion
 from private_wallet.models.TokenModel import TokenModel
 from private_wallet.models.ContractModel import Contract
-from private_wallet.models.SessionModel import SessionModel
 from flask import current_app
 from private_wallet.utils import *
 
@@ -31,7 +30,7 @@ def index():
     return render_template('index.html', name=app_name)
 
 @main.route('/withdraw_request', methods=['POST'])
-def withdraw_tokens_from_acc(headers):
+def withdraw_tokens_from_acc():
     '''Method called by the wallet front-end when the user requests to withdraw tokens from her account'''
     
     msb_id = str(request.form.get('msb'))
@@ -69,6 +68,10 @@ def withdraw_tokens_from_acc(headers):
         # generates the challenge response for each token
         es, tokens = handle_challenges(tokens, res.json(), params['timestamp'])
         try:
+            # use access tokens in order to not be required to check account details every time            
+            headers = {
+              'Authorization': "Bearer " + res.get('access')
+            }
             res = requests.post("http://%s/withdraw_tokens" % current_app.config[msb_id], json=json.dumps(es), headers=headers)
             if res.status_code == 201:
                 data = res.json()
