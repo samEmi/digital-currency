@@ -1,7 +1,8 @@
 import sys
 from Crypto import Random as rd
-from pos_app.dbs.ContractModel import Contract
+from pos_app.models.ContractModel import Contract
 from flask import current_app
+from charm.toolbox.conversion import Conversion
 
 signer = current_app.config['signer']
 
@@ -43,5 +44,5 @@ class Nonce:
 def get_provider_pubkey():
     pass
 
-def get_merchant_signature(nonce: string):
-    return signer.sign(nonce)
+def get_merchant_signature(nonce: str):
+    return Conversion.OS2IP(signer.sign(nonce))

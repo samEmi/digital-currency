@@ -9,8 +9,10 @@ from pos_app.models.ContractModel import Contract
 from pos_app.utils import *
 from flask import current_app
 import dateutil.parser
+import requests
 
 main = Blueprint('main', __name__, template_folder='templates')
+msb_id = current_app.config['msb_id']
 
 @main.route('/request_contract', methods=['GET'])
 def request_contract():
@@ -42,6 +44,7 @@ def send_tokens():
     nonce = data.get('nonce')
     contract = Contract.find(nonce)
     if contract == None: return jsonify({'message': 'No corresponding contract'}), 500
+    
     #TODO: think about whether this check is absolutely redundant since singnatures will be validated by msbs as well?
     singatures = data.get('signatures')
     if contract.verify_signature(singatures) == False: 
@@ -52,7 +55,7 @@ def send_tokens():
         jsonify({'message': 'Blind signature failed to verify'}), 400
 
     # connect to msb which will validate tokens against database of spent tokens
-    msb_id = current_app.config['msb_id']
+    
     params = {
         'account_id': current_user.config['account_id'],
         'account_pass': current_user.config['account_pass'],
@@ -79,6 +82,6 @@ def send_tokens():
     }
     
     contract.save()
-    return resp, 200
+    return resp, 201
 
 
