@@ -1,7 +1,7 @@
 import json
 import os
 from datetime import timedelta
-import requests
+import requestsgi
 from flask import request, Response, jsonify, render_template, redirect, url_for, flash, Blueprint
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, current_user
 from crypto_utils.conversions import SigConversion

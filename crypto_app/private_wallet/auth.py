@@ -2,7 +2,7 @@
 import requests
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask import current_app
-from private_wallet.dbs.SessionModel import SessionModel
+from private_wallet.models.SessionModel import SessionModel
 from flask_jwt_extended import create_access_token, create_refresh_token
 from datetime import timedelta
 
