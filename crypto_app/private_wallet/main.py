@@ -1,4 +1,3 @@
-from .utils import *
 import functools
 import requests
 from charm.toolbox.conversion import Conversion
@@ -7,8 +6,8 @@ import os
 from time import localtime
 import dotenv
 from crypto_utils.conversions import SigConversion
-from user.models.TokenModel import TokenModel
-from user.models.ContractModel import Contract
+from private_wallet.models.TokenModel import TokenModel
+from private_wallet.models.ContractModel import Contract
 from private_wallet.models.SessionModel import SessionModel
 from flask import current_app
 from private_wallet.utils import *
