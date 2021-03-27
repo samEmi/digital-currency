@@ -6,10 +6,10 @@ import os
 from time import localtime
 import dotenv
 from crypto_utils.conversions import SigConversion
-from private_wallet.models.TokenModel import TokenModel
+from .models.TokenModel import TokenModel
 from .models.ContractModel import Contract
 from flask import current_app
-from private_wallet.utils import *
+from .utils import *
 import dateutil.parser
 
 main = Blueprint('main', __name__, template_folder='templates')
