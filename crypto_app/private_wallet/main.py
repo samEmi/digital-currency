@@ -10,8 +10,6 @@ from private_wallet.models.TokenModel import TokenModel
 from private_wallet.models.ContractModel import Contract
 from flask import current_app
 from private_wallet.utils import *
-
-
 import dateutil.parser
 
 main = Blueprint('main', __name__, template_folder='templates')
@@ -77,7 +75,7 @@ def withdraw_tokens_from_acc():
                 data = res.json()
                 save_tokens(data, tokens, msb_id)
                 flash("Tokens have been signed", 'withdraw_success')
-                return render_template('withdraw_tokens.html'
+                return render_template('withdraw_tokens.html')
             else:
                 flash("Invalid input", 'withdraw_fail')
                 return render_template('withdraw_tokens.html')
