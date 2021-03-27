@@ -12,7 +12,7 @@ import dateutil.parser
 import requests
 
 main = Blueprint('main', __name__, template_folder='templates')
-msb_id = current_app.config['msb_id']
+msb_id = current_app.config['msb1']
 
 @main.route('/request_contract', methods=['GET'])
 def request_contract():
@@ -59,8 +59,8 @@ def send_tokens():
     # connect to msb which will validate tokens against database of spent tokens
     
     params = {
-        'account_id': current_user.config['account_id'],
-        'account_pass': current_user.config['account_pass'],
+        'account_id': current_app.config['account_id'],
+        'account_pass': current_app.config['account_pass'],
     }
     
     res = requests.post('http://{}/receive_tokens_into_account'.format(msb_id), json=json.dumps(data), params=params)
