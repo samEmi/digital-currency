@@ -7,7 +7,7 @@ from charm.toolbox.conversion import Conversion
 
 from crypto_utils.conversions import SigConversion
 from crypto_utils.signatures import UserBlindSignature
-from private_wallet import db
+from .. import db
 
 
 class TokenModel(db.Model):
