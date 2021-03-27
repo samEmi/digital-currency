@@ -7,7 +7,7 @@ from time import localtime
 import dotenv
 from crypto_utils.conversions import SigConversion
 from private_wallet.models.TokenModel import TokenModel
-from private_wallet.models.ContractModel import Contract
+from .models.ContractModel import Contract
 from flask import current_app
 from private_wallet.utils import *
 import dateutil.parser

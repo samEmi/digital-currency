@@ -29,7 +29,7 @@ end
 # unset irrelevant variables
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV "/home/maria_kapros9/digital-currency/env"
+set -gx VIRTUAL_ENV "/Users/karyam/Desktop/hyperledger/master/digital-currency/env"
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/bin" $PATH
