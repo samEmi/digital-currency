@@ -43,7 +43,7 @@ def create_app():
     db.init_app(app)
 
     # blueprint for non-auth parts of app
-    from msb_app.main import main as main_blueprint
+    from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
 
     db.create_all(app=app)
