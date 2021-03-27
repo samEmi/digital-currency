@@ -83,7 +83,7 @@ def withdraw_tokens_from_acc():
             flash(str(e), 'withdraw_fail')
             return render_template('withdraw_tokens.html')
     except Exception as e:
-        flash(str(e), "post_tokens", 'withdraw_fail')
+        flash(str(e), 'withdraw_fail')
         return render_template('withdraw_tokens.html')
 
 
