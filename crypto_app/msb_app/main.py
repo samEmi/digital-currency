@@ -1,5 +1,5 @@
 from flask import request, current_app, jsonify, flash, Blueprint
-from msb_app.utils import *
+from .utils import *
 import json
 import requests
 from crypto_utils.signatures import SignerBlindSignature
