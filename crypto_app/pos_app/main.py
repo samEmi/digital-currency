@@ -46,13 +46,13 @@ def send_tokens():
     if contract == None: return jsonify({'message': 'No corresponding contract'}), 500
     
     #TODO: think about whether this check is absolutely redundant since singnatures will be validated by msbs as well?
-    singatures = data.get('signatures')
-    if signatures is None or len(signatures) != len(contract.token_keys) \ 
-    or contract.verify_signature(singatures) == False: 
+    signatures = data.get('signatures')
+    if signatures is None or len(signatures) != len(contract.token_keys) \
+    or contract.verify_signature(signatures) == False: 
         return jsonify({'message': 'Invalid Signature'}), 400
     
     blind_singatures = data.get('blind_signatures')
-    if signatures is None or len(signatures) != len(contract.token_keys) \ 
+    if signatures is None or len(signatures) != len(contract.token_keys) \
     or contract.verify_blind_signature(blind_singatures) == False: 
         jsonify({'message': 'Blind signature failed to verify'}), 400
 
