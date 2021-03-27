@@ -8,7 +8,6 @@ from crypto_utils.conversions import SigConversion
 from pos_app.models.ContractModel import Contract
 from pos_app.utils import *
 from flask import current_app
-import dateutil.parser
 import requests
 
 main = Blueprint('main', __name__, template_folder='templates')
