@@ -1,6 +1,6 @@
 from sqlalchemy import ForeignKey
 
-from msb_app import db
+from .. import db
 from crypto_utils.conversions import SigConversion
 
 
