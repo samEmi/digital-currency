@@ -23,7 +23,6 @@ def token_required(func):
     """
     @functools.wraps(func)
     def decorator_token_required(*args, **kwargs):
-        # Get access_token
         first = Session.query.first()
         headers = {}
         if first:
@@ -59,7 +58,21 @@ def withdraw_request(headers):
     if access_token is None:
         return redirect(url_for('auth.login'))
     return render_template('withdraw_tokens.html', now=localtime())
-    
+
+
+@main.route('/send_to_merchant_request')
+@token_required
+def send_to_merchant_request(headers):
+    """
+    Renders the withdraw_tokens.html page.
+    :param headers:
+    :return:
+    """
+    access_token = Session.query.first()
+    if access_token is None:
+        return redirect(url_for('auth.login'))
+    return render_template('send_tokens.html', now=localtime())
+
 
 @main.route('/withdraw_request', methods=['POST'])
 def withdraw_tokens_from_acc():
