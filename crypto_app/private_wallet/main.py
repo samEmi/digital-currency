@@ -91,7 +91,7 @@ def withdraw_tokens_from_acc(headers):
     
     res = res.json()
     # generate list of tokens
-    tokens = [get_token(provider_id=msb_id, pub_key=res.get('pub_key'), 
+    tokens = [get_token(provider_id=msb_id, pubkey=res.get('pub_key'), 
                         timestamp=params['timestamp'], 
                         expiration=res.get('expiration')) 
                         for _ in range(params['total_value'])
@@ -144,17 +144,18 @@ def send_tokens_to_merchant(headers):
     '''
     merchant_id = str(request.form.get('merchant_id'))
     total_value = int(request.form.get('total_value'))
+    timestamp = int(dateutil.parser.parse(request.form.get('timestamp')).timestamp())
 
     try:
         # get tokens from wallet database 
         # TODO: implement support for list of values 
-        tokens = get_tokens_from_wallet(total_value)
+        tokens = get_tokens_from_wallet(total_value, timestamp)
 
         params = {
             'total_value': total_value,
             'claim_pubkey': tokens[0].pub_key,
             'token_pubkeys': [token.pub_key for token in tokens],
-            'timestamp': int(dateutil.parser.parse(request.form.get('timestamp')).timestamp()),
+            'timestamp': timestamp,
         }
 
         # request contract which will have to be signed with tokens private keys
