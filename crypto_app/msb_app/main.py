@@ -4,6 +4,7 @@ import json
 import requests
 from crypto_utils.signatures import SignerBlindSignature
 from crypto_utils.conversions import SigConversion
+from flask_jwt_extended import jwt_required
 
 main = Blueprint('main', __name__, template_folder='templates')
 

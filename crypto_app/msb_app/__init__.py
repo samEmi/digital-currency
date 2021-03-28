@@ -7,6 +7,7 @@ from charm.toolbox.integergroup import IntegerGroupQ
 from dateutil.relativedelta import *
 from dateutil.easter import *
 from datetime import date
+from flask_jwt_extended import JWTManager
 
 # now = parse("Tues March 23 17:13:46 UTC 2020")
 today = date.today()
@@ -15,10 +16,7 @@ rdelta = relativedelta(easter(2021), today)
 # init SQLAlchemy so we can use it later in our models
 
 db = SQLAlchemy()
-
-# init SQLAlchemy so we can use it later in our models
-db = SQLAlchemy()
-
+jwt = JWTManager()
 
 def create_app():
     app = Flask(__name__, template_folder='templates')
@@ -41,6 +39,7 @@ def create_app():
     app.config['msb5'] = 'msb5:5000'
 
     db.init_app(app)
+    jwt.init_app(app)
 
     # blueprint for non-auth parts of app
     from .main import main as main_blueprint

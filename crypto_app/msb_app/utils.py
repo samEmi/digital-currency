@@ -6,15 +6,10 @@ from charm.toolbox.integergroup import IntegerGroupQ
 import json
 from .models.AccountModel import AccountModel
 from .models.SigVarsModel import SigVarsModel
-from .utils import *
 from flask import current_app, flash, jsonify
 from flask_jwt_extended import current_user
 from flask_jwt_extended import create_access_token, create_refresh_token
 from datetime import timedelta
-
-signer = current_app.config['signer']
-pubkey = current_app.config['pubkey']
-key_expiration = current_app.config['key_expiration']
 
 def validate_account(account_id, account_pass):
     user = AccountModel.query.filter_by(account_id=account_id).first()
@@ -33,6 +28,7 @@ def validate_account(account_id, account_pass):
     return resp, 200
 
 def gen_proofs_handler(es, timestamp):
+    signer = current_app.config['signer']
     proofs = []
     # iterate through the challenge responses received
     for x in es:
@@ -68,6 +64,10 @@ def gen_challenge_handler(number:int, timestamp: int):
     sigvars = AccountModel.query.get(current_user.id).get_sigvar(timestamp)
     if sigvars:
         raise Exception("Key already exists")
+
+    signer = current_app.config['signer']
+    pubkey = current_app.config['pubkey']
+    key_expiration = current_app.config['key_expiration']
     
     #TODO: add key expiration and generate new key when expired
     # start with only one challenge per request regardless of the number of tokens
