@@ -81,6 +81,7 @@ def withdraw_tokens_from_acc(headers):
     }
 
     # connect to msb_id which will try and generate the key model and signature challenge for each token
+    # res = requests.get("http://%s/key_setup" % current_app.config[msb_id], params=params)
     res = requests.get("http://%s/key_setup" % current_app.config[msb_id], params=params) 
     res = res.json()
     
