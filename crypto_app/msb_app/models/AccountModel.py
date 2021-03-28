@@ -9,10 +9,10 @@ from .. import db
 class AccountModel(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(100), unique=True, nullable=False)
+    email = db.Column(db.String(100), unique=True)
     account_id = db.Column(db.String(100), unique=True, nullable=False)
     account_pin = db.Column(db.String(100), nullable=False)
-    name = db.Column(db.String(1000), nullable=False)
+    name = db.Column(db.String(1000))
     sigvars = relationship('SigVarsModel')
 
     def get_id(self):
@@ -31,7 +31,7 @@ class AccountModel(UserMixin, db.Model):
         self.password = generate_password_hash(password, method='sha256')
 
     def verify_password(self, password):
-        return check_password_hash(self.account_pass, password)
+        return check_password_hash(self.account_pin, password)
 
     def delete(self):
         db.session.delete(self)

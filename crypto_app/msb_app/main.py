@@ -18,6 +18,28 @@ def index():
     return render_template('index.html', name=app_name)
 
 
+@main.route('/signup')
+def signup():
+    return render_template('signup.html')
+
+@main.route('/signup', methods=['POST'])
+def signup_post():
+
+    account_id = request.form.get('account_id')
+    account_pin = request.form.get('account_pin')
+
+    # if this returns a user, then the email already exists in database
+    user = AccountModel.query.filter_by(account_id=account_id).first()
+
+    # if a user is found, we want to redirect back to signup page so user can try again
+    if user:
+        return jsonify({'message': 'User already exists'}), 401
+
+    new_user = AccountModel(account_id=account_id, account_pin=account_pin)
+    new_user.save_to_db()
+    return jsonify({'message': 'Created.'}), 201
+
+
 @main.route('/key_setup', methods=['GET'])
 def key_setup():
     '''Function called when the user wallet app requests to withdraw tokens from given account'''
