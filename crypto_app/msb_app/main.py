@@ -1,30 +1,62 @@
-from flask import request, current_app, jsonify, flash, Blueprint
-from msb_app.utils import *
+from flask import request, current_app, jsonify, flash, Blueprint, render_template
+from .utils import *
 import json
 import requests
 from crypto_utils.signatures import SignerBlindSignature
 from crypto_utils.conversions import SigConversion
+from flask_jwt_extended import jwt_required
+import os
 
 main = Blueprint('main', __name__, template_folder='templates')
+
+@main.route('/')
+def index():
+    app_name = os.getenv("APP_NAME")
+    if not app_name:
+        app_name = "MSB Interface"
+
+    return render_template('index.html', name=app_name)
+
+
+@main.route('/signup')
+def signup():
+    return render_template('signup.html')
+
+@main.route('/signup', methods=['POST'])
+def signup_post():
+    account_id = request.form.get('account_id')
+    account_pin = request.form.get('account_pin')
+
+    # if this returns a user, then the email already exists in database
+    user = AccountModel.query.filter_by(account_id=account_id).first()
+
+    # if a user is found, we want to redirect back to signup page so user can try again
+    if user:
+        return jsonify({'message': 'User already exists'}), 401
+
+    new_user = AccountModel(account_id=account_id, account_pin=account_pin)
+    new_user.save_to_db()
+    return jsonify({'message': 'Created.' + account_id}), 201
+
 
 @main.route('/key_setup', methods=['GET'])
 def key_setup():
     '''Function called when the user wallet app requests to withdraw tokens from given account'''
     
     account_id = request.args.get('account_id')
-    account_pin = request.args.get('account_pass')
+    account_pin = request.args.get('account_pin')
     number = request.args.get('num_tokens')
     timestamp = request.args.get('timestamp')
 
-    if (account_id is None) or (number is None) or (account_pin is None) :
+    if (account_id is None) or (number is None) or (account_pin is None):
         resp = jsonify({
-            'message': "Bad Request: Required parameters are not set."
+            'message': "Bad Request: Required parameters are not set"
         })
         return resp, 400
 
     try:
         access = validate_account(account_id, account_pin)
-        sigvar = gen_challenge_handler(number, timestamp)
+        sigvar = gen_challenge_handler(access['userid'], number, timestamp)
         resp = jsonify({
             'access': access['access'],
             'refresh': access['refresh'],
@@ -35,7 +67,7 @@ def key_setup():
         return resp, 201
     except Exception as e:
         resp = jsonify({
-            'message': "Unauthorised: " + e
+            'message': "Unauthorised: " + str(e)
         })
         return resp, 400
 

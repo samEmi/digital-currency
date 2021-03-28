@@ -5,8 +5,8 @@ from Crypto.Hash import SHA256
 from Crypto.PublicKey import ECC
 from Crypto.Signature import DSS
 from charm.toolbox.conversion import Conversion
-# from private_wallet import db
-from private_wallet.utils import *
+from .. import db
+from ..utils import *
 from crypto_utils.conversions import SigConversion
 from crypto_utils.signatures import BlindSignatureVerifier
 
@@ -22,7 +22,7 @@ class Contract(db.Model):
     receiver_pubkey = db.Column(db.Boolean())
 
 
-    def __init__(self, y: str, value: int, claim_keypair: ECC, timestamp, payed: boolean, receiver: str, signature: str, pubkey: bytes):
+    def __init__(self, y: str, value: int, claim_keypair: ECC, timestamp, payed: 'boolean', receiver: str, signature: str, pubkey: bytes):
         self.y = y
         self.value = value
         self.claim_keypair_ = claim_keypair

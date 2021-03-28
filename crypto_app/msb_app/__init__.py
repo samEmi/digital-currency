@@ -6,24 +6,17 @@ from crypto_utils.conversions import SigConversion
 from charm.toolbox.integergroup import IntegerGroupQ
 from dateutil.relativedelta import *
 from dateutil.easter import *
-from dateutil.rrule import *
-from datetime import *
+from datetime import date
+from flask_jwt_extended import JWTManager
 
-now = parse("Tues March 23 17:13:46 UTC 2020")
-today = now.date()
-year = rrule(YEARLY,dtstart=now,bymonth=8,bymonthday=13,byweekday=FR)[0].year
-rdelta = relativedelta(easter(year), today)
+# now = parse("Tues March 23 17:13:46 UTC 2020")
+today = date.today()
+rdelta = relativedelta(easter(2021), today)
 
 # init SQLAlchemy so we can use it later in our models
 
 db = SQLAlchemy()
 jwt = JWTManager()
-host = "0.0.0.0"
-today = now.date()
-
-# init SQLAlchemy so we can use it later in our models
-db = SQLAlchemy()
-
 
 def create_app():
     app = Flask(__name__, template_folder='templates')
@@ -46,9 +39,10 @@ def create_app():
     app.config['msb5'] = 'msb5:5000'
 
     db.init_app(app)
+    jwt.init_app(app)
 
     # blueprint for non-auth parts of app
-    from msb_app.main import main as main_blueprint
+    from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
 
     db.create_all(app=app)

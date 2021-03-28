@@ -1,5 +1,5 @@
 from Crypto import Random as rd
-from private_wallet.models.TokenModel import TokenModel
+from .models.TokenModel import TokenModel
 import json
 from typing import Tuple
 from charm.toolbox.conversion import Conversion

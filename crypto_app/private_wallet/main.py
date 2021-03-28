@@ -6,13 +6,33 @@ import os
 from time import localtime
 import dotenv
 from crypto_utils.conversions import SigConversion
-from private_wallet.models.TokenModel import TokenModel
+from .models.TokenModel import TokenModel
 from .models.ContractModel import Contract
+from .models.SessionModel import Session
 from flask import current_app
-from private_wallet.utils import *
+from .utils import *
 import dateutil.parser
+import sys
 
 main = Blueprint('main', __name__, template_folder='templates')
+
+def token_required(func):
+    """
+    Helper wrapper that injects the access token that is needed for authentication into the protected methods.
+    :param func: JWT protected function.
+    :return:
+    """
+    @functools.wraps(func)
+    def decorator_token_required(*args, **kwargs):
+        first = Session.query.first()
+        headers = {}
+        if first:
+            access_token = Session.query.first().access_token
+            headers = {
+                'Authorization': "Bearer " + access_token
+            }
+        return func(headers)
+    return decorator_token_required
 
 @main.route('/')
 def index():
@@ -27,8 +47,23 @@ def index():
 
     return render_template('index.html', name=app_name)
 
+@main.route('/withdraw_request')
+@token_required
+def withdraw_request(headers):
+    """
+    Renders the withdraw_tokens.html page.
+    :param headers:
+    :return:
+    """
+    access_token = Session.query.first()
+    if access_token is None:
+        return redirect(url_for('auth.login'))
+    return render_template('withdraw_tokens.html', now=localtime())
+
+
 @main.route('/withdraw_request', methods=['POST'])
-def withdraw_tokens_from_acc():
+@token_required
+def withdraw_tokens_from_acc(headers):
     '''Method called by the wallet front-end when the user requests to withdraw tokens from her account'''
     
     msb_id = str(request.form.get('msb'))
@@ -47,14 +82,14 @@ def withdraw_tokens_from_acc():
     }
 
     # connect to msb_id which will try and generate the key model and signature challenge for each token
-    res = requests.get("http://%s/key_setup" % current_app.config[msb_id], params=params, headers=headers) 
-    res = res.json()
+    res = requests.get("http://%s/key_setup" % current_app.config[msb_id], params=params) 
     
     # invalid input
-    if res.status_code == 400:
-        flash(res.get('message'))
+    if res.status_code == 400:      
+        flash(res.json().get('message'), 'withdraw_fail')
         return redirect(url_for('main.withdraw_tokens_from_acc'))
     
+    res = res.json()
     # generate list of tokens
     tokens = [get_token(provider_id=msb_id, pub_key=res.get('pub_key'), 
                         timestamp=params['timestamp'], 
@@ -70,11 +105,11 @@ def withdraw_tokens_from_acc():
             headers = {
               'Authorization': "Bearer " + res.get('access')
             }
-            res = requests.post("http://%s/withdraw_tokens" % current_app.config[msb_id], json=json.dumps(es), headers=headers)
+            res = requests.post("http://%s/withdraw_tokens" % current_app.config[msb_id], json=json.dumps(es))
             if res.status_code == 201:
                 data = res.json()
                 save_tokens(data, tokens, msb_id)
-                flash("Tokens have been signed", 'withdraw_success')
+                flash("Tokens have been signed successfully!", 'withdraw_success')
                 return render_template('withdraw_tokens.html')
             else:
                 flash("Invalid input", 'withdraw_fail')
@@ -83,12 +118,27 @@ def withdraw_tokens_from_acc():
             flash(str(e), 'withdraw_fail')
             return render_template('withdraw_tokens.html')
     except Exception as e:
-        flash(str(e), "post_tokens", 'withdraw_fail')
+        flash(str(e), 'withdraw_fail')
         return render_template('withdraw_tokens.html')
 
 
+@main.route('/send_to_merchant_request')
+@token_required
+def send_to_merchant_request(headers):
+    """
+    Renders the withdraw_tokens.html page.
+    :param headers:
+    :return:
+    """
+    access_token = Session.query.first()
+    if access_token is None:
+        return redirect(url_for('auth.login'))
+    return render_template('send_tokens.html', now=localtime())
+
+
 @main.route('/send_to_merchant_request', methods=['POST'])
-def send_tokens_to_merchant():
+@token_required
+def send_tokens_to_merchant(headers):
     '''
     Method called by the wallet front-end when the user requests to send tokens to merchant.
     '''

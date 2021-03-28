@@ -1,1 +1,1 @@
-__all__ = ["private_wallet", "pos_app", "msb_app", "crypto_utils"]
+__all__ = ['private_wallet', 'pos_app', 'msb_app', 'crypto_utils']
