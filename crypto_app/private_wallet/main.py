@@ -8,11 +8,31 @@ import dotenv
 from crypto_utils.conversions import SigConversion
 from .models.TokenModel import TokenModel
 from .models.ContractModel import Contract
+from .models.SessionModel import Session
 from flask import current_app
 from .utils import *
 import dateutil.parser
 
 main = Blueprint('main', __name__, template_folder='templates')
+
+def token_required(func):
+    """
+    Helper wrapper that injects the access token that is needed for authentication into the protected methods.
+    :param func: JWT protected function.
+    :return:
+    """
+    @functools.wraps(func)
+    def decorator_token_required(*args, **kwargs):
+        # Get access_token
+        first = Session.query.first()
+        headers = {}
+        if first:
+            access_token = Session.query.first().access_token
+            headers = {
+                'Authorization': "Bearer " + access_token
+            }
+        return func(headers)
+    return decorator_token_required
 
 @main.route('/')
 def index():
@@ -26,6 +46,19 @@ def index():
         app_name = "User Interface"
 
     return render_template('index.html', name=app_name)
+
+@main.route('/withdraw_request')
+@token_required
+def withdraw_request(headers):
+    """
+    Renders the withdraw_tokens.html page.
+    :param headers:
+    :return:
+    """
+    access_token = SessionModel.query.first()
+    if access_token is None:
+        return redirect(url_for('auth.login'))
+    return render_template('generate_keys.html', now=localtime())
 
 @main.route('/withdraw_request', methods=['POST'])
 def withdraw_tokens_from_acc():
