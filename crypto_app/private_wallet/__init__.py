@@ -1,8 +1,10 @@
 # init.py
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_jwt_extended import JWTManager
 
 db = SQLAlchemy()
+jwt = JWTManager()
 
 def create_app():
     app = Flask(__name__, template_folder='templates')
@@ -21,6 +23,7 @@ def create_app():
     app.config['password'] = None
     
     db.init_app(app)
+    jwt.init_app(app)
 
     from .auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint)
