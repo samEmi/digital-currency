@@ -1,21 +1,31 @@
 import requests
 import json
+from user import User, post
 
 rootUrl = "http://localhost:4000"
 
 
+# def addUsers(n):
+#     for i in range(n):
+#         response = addUser(i)
+#         if response and response["success"]:
+#             token = response["token"]
+#             addAsset(token, 100)
+#             perform_transactions(token, 10, n)
+#         else:
+#             print(response)
+#         print("=================================================\n")
 
-def addUsers(n):
-    for i in range(n):
+def simulate_network(size):
+    for i in range(size):
         response = addUser(i)
         if response and response["success"]:
             token = response["token"]
-            r = addAsset(token, 100)
-            print(r)
+            user = User(token, 100, size, 9)
+            user.start()
         else:
             print(response)
-
-
+        print("=================================================\n")
 
 def addUser(name):
     payload = {
@@ -25,74 +35,59 @@ def addUser(name):
     return post(payload, url=f'{rootUrl}/users')
 
 
-def addAsset(address, amount):
-    payload = {
-        "fcn": "Mint",
-        "args": [str(amount)],
-        "peers": [
-            "peer0.msb1.example.com",
-            "peer0.msb2.example.com"
-        ],
-        "chaincodeName": "token-erc-20",
-        "channelName": "mychannel"
-    }
-    return invokeChaincodeFunc(address, payload)
+# def addAsset(address, amount):
+#     payload = {
+#         "fcn": "Mint",
+#         "args": [str(amount)],
+#         "peers": [
+#             "peer0.msb1.example.com",
+#             "peer0.msb2.example.com"
+#         ],
+#         "chaincodeName": "token-erc-20",
+#         "channelName": "mychannel"
+#     }
+#     return invokeChaincodeFunc(address, payload)
 
 
-def transfer(sender, recipient, amount):
-    payload = {
-        "fcn": "Transfer",
-        "peers": [
-            "peer0.msb1.example.com",
-            "peer0.msb2.example.com"
-        ],
-        "chaincodeName": "token-erc-20",
-        "channelName": "mychannel",
-        "args": [
-            str(recipient),
-            str(amount)
-        ]
-    }
-    return invokeChaincodeFunc(sender, payload)
+# def perform_transactions(sender, amount, n):
+#     for i in range(n):
+#         r = transfer(sender, i, amount)
+#         print(r)
+    
 
-def invokeChaincodeFunc(authorized_address, payload):
-    url = f'{rootUrl}/channels/mychannel/chaincodes/token-erc-20'
-    headers = {"Authorization" : "Bearer " + str(authorized_address)}
-    return post(payload, url, headers=headers)
-
-def post(payload, url, headers=None):
-    response = None
-    try:
-        response = requests.post(url, json=payload, headers=headers, timeout=180).json()
-    except Exception as e:
-        print(f"Post Request Error ", e)
-        return response
-    return response
+# def transfer(sender, recipient, amount):
+#     payload = {
+#         "fcn": "Transfer",
+#         "peers": [
+#             "peer0.msb1.example.com",
+#             "peer0.msb2.example.com"
+#         ],
+#         "chaincodeName": "token-erc-20",
+#         "channelName": "mychannel",
+#         "args": [
+#             str(recipient),
+#             str(amount)
+#         ]
+#     }
+#     return invokeChaincodeFunc(sender, payload)
 
 
-addUsers(4)
-
-# addAsset("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MTY5MTUwNzQsInVzZXJuYW1lIjoiZmZmIiwib3JnTmFtZSI6Ik9yZzEiLCJpYXQiOjE2MTY4NzkwNzR9.hW8ZL3oMt7l1kblrbREL2_M5Xx87SP3dybGUGWhUnWg")
-
-# payload = {
-#     "fcn": "Transfer",
-#     "peers": [
-#         "peer0.msb1.example.com",
-#         "peer0.msb2.example.com"
-#     ],
-#     "chaincodeName": "token-erc-20",
-#     "channelName": "mychannel",
-#     "args": [
-#         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MTY3MzM5NDUsInVzZXJuYW1lIjoibmFtIiwib3JnTmFtZSI6Ik9yZzEiLCJpYXQiOjE2MTY2OTc5NDV9.OhbbARlWXOeigYs-WxVI2MOVWBQK0CbmhgZgV4_tFBE",
-#          "40"
-#     ]
-# }
+# def invokeChaincodeFunc(authorized_address, payload):
+#     url = f'{rootUrl}/channels/mychannel/chaincodes/token-erc-20'
+#     headers = {"Authorization" : "Bearer " + str(authorized_address)}
+#     return post(payload, url, headers=headers)
 
 
-# # headers = {"Authorization" : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MTY5MTUwNzQsInVzZXJuYW1lIjoiZmZmIiwib3JnTmFtZSI6Ik9yZzEiLCJpYXQiOjE2MTY4NzkwNzR9.hW8ZL3oMt7l1kblrbREL2_M5Xx87SP3dybGUGWhUnWg" }
+# def post(payload, url, headers=None):
+#     response = None
+#     try:
+#         response = requests.post(url, json=payload, headers=headers, timeout=180).json()
+#     except Exception as e:
+#         print(f"Post Request Error ", e)
+#         return response
+#     return response
 
-# header = {"Authorization" : "Bearer eDUwOTo6Q049cm9uLE9VPWNsaWVudCtPVT1vcmcxK09VPWRlcGFydG1lbnQxOjpDTj1jYS5tc2IxLmV4YW1wbGUuY29tLE89bXNiMS5leGFtcGxlLmNvbSxMPVNhbiBGcmFuY2lzY28sU1Q9Q2FsaWZvcm5pYSxDPVVT" }
 
-# r = requests.post('http://localhost:4000/channels/mychannel/chaincodes/token-erc-20', json=payload, headers=headers, timeout=180)
+simulate_network(4)
 
-# print(r.text)
+
