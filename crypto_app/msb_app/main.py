@@ -24,7 +24,6 @@ def signup():
 
 @main.route('/signup', methods=['POST'])
 def signup_post():
-
     account_id = request.form.get('account_id')
     account_pin = request.form.get('account_pin')
 
@@ -37,7 +36,7 @@ def signup_post():
 
     new_user = AccountModel(account_id=account_id, account_pin=account_pin)
     new_user.save_to_db()
-    return jsonify({'message': 'Created.'}), 201
+    return jsonify({'message': 'Created.' + account_id}), 201
 
 
 @main.route('/key_setup', methods=['GET'])
@@ -57,7 +56,7 @@ def key_setup():
 
     try:
         access = validate_account(account_id, account_pin)
-        sigvar = gen_challenge_handler(number, timestamp)
+        sigvar = gen_challenge_handler(access['userid'], number, timestamp)
         resp = jsonify({
             'access': access['access'],
             'refresh': access['refresh'],

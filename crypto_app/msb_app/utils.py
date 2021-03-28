@@ -20,12 +20,12 @@ def validate_account(account_id, account_pin):
     access_token = create_access_token(identity=user.id, expires_delta=timedelta(minutes=30))
     refresh_token = create_refresh_token(identity=user.id, expires_delta=timedelta(minutes=30))
 
-    resp = jsonify({
+    resp = {
+        'userid': user.id,
         'access': access_token,
         'refresh': refresh_token
-    })
-
-    return resp, 200
+    }
+    return resp
 
 def gen_proofs_handler(es, timestamp):
     signer = current_app.config['signer']
@@ -55,13 +55,13 @@ def gen_proofs_handler(es, timestamp):
 
     return resp
 
-def gen_challenge_handler(number:int, timestamp: int):
+def gen_challenge_handler(userid: int, number: int, timestamp: int):
     '''
     Function to initialize blind signature scheme and generate the challenge (r, a, b1, b2)
     :param: number: the number of requested signatures
     :return: data: list of dict containing challenges and the pubkey used by the signer to generate them
     '''
-    sigvars = AccountModel.query.get(current_user.id).get_sigvar(timestamp)
+    sigvars = AccountModel.query.get(userid).get_sigvar(timestamp)
     if sigvars:
         raise Exception("Key already exists")
 
@@ -72,7 +72,7 @@ def gen_challenge_handler(number:int, timestamp: int):
     #TODO: add key expiration and generate new key when expired
     # start with only one challenge per request regardless of the number of tokens
     challenge = SigConversion.convert_dict_strlist(signer.get_challenge())
-    sigvars = SigVarsModel(timestamp=timestamp, u=signer.u, d=signer.d, s1=signer.s1, s2=signer.s2, user_id=current_user.id)
+    sigvars = SigVarsModel(timestamp=timestamp, u=signer.u, d=signer.d, s1=signer.s1, s2=signer.s2, user_id=userid)
     sigvars.save_to_db()
     
     resp = {

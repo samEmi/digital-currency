@@ -22,7 +22,7 @@ class AccountModel(UserMixin, db.Model):
         self.account_id = account_id
         self.account_pin = account_pin
         # self.email = email
-        # self.hash_password(password)
+        #self.hash_password(account_pin)
 
     def __repr__(self):
         return "<User(name='%s', email='%s')>" % (self.name, self.email)
@@ -30,16 +30,19 @@ class AccountModel(UserMixin, db.Model):
     def hash_password(self, password):
         self.password = generate_password_hash(password, method='sha256')
 
+    # def verify_password(self, password):
+    #     return check_password_hash(self.account_pin, password)
+
     def verify_password(self, password):
-        return check_password_hash(self.account_pin, password)
+        return self.account_pin == password
 
     def delete(self):
         db.session.delete(self)
         db.session.commit()
 
-    def get_sigvar(self, timestamp, policy):
+    def get_sigvar(self, timestamp):
         for x in self.sigvars:
-            if x.timestamp == timestamp and x.policy == policy:
+            if x.timestamp == timestamp:
                 return x
         return None
 
