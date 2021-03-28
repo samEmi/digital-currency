@@ -12,6 +12,7 @@ from .models.SessionModel import Session
 from flask import current_app
 from .utils import *
 import dateutil.parser
+import sys
 
 main = Blueprint('main', __name__, template_folder='templates')
 
@@ -81,15 +82,14 @@ def withdraw_tokens_from_acc(headers):
     }
 
     # connect to msb_id which will try and generate the key model and signature challenge for each token
-    # res = requests.get("http://%s/key_setup" % current_app.config[msb_id], params=params)
     res = requests.get("http://%s/key_setup" % current_app.config[msb_id], params=params) 
-    res = res.json()
     
     # invalid input
-    if res.status_code == 400:
-        flash(res.get('message'))
+    if res.status_code == 400:      
+        flash(res.json().get('message'), 'withdraw_fail')
         return redirect(url_for('main.withdraw_tokens_from_acc'))
     
+    res = res.json()
     # generate list of tokens
     tokens = [get_token(provider_id=msb_id, pub_key=res.get('pub_key'), 
                         timestamp=params['timestamp'], 
