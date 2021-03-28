@@ -23,13 +23,13 @@ def key_setup():
     '''Function called when the user wallet app requests to withdraw tokens from given account'''
     
     account_id = request.args.get('account_id')
-    account_pin = request.args.get('account_pass')
+    account_pin = request.args.get('account_pin')
     number = request.args.get('num_tokens')
     timestamp = request.args.get('timestamp')
 
-    if (account_id is None) or (number is None) or (account_pin is None) :
+    if (account_id is None) or (number is None) or (account_pin is None):
         resp = jsonify({
-            'message': "Bad Request: Required parameters are not set."
+            'message': "Bad Request: Required parameters are not set"
         })
         return resp, 400
 
@@ -46,7 +46,7 @@ def key_setup():
         return resp, 201
     except Exception as e:
         resp = jsonify({
-            'message': "Unauthorised: " + e
+            'message': "Unauthorised: " + str(e)
         })
         return resp, 400
 
