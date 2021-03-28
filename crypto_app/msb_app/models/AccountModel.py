@@ -11,17 +11,18 @@ class AccountModel(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), unique=True, nullable=False)
     account_id = db.Column(db.String(100), unique=True, nullable=False)
-    account_pass = db.Column(db.String(100), nullable=False)
+    account_pin = db.Column(db.String(100), nullable=False)
     name = db.Column(db.String(1000), nullable=False)
     sigvars = relationship('SigVarsModel')
 
     def get_id(self):
         return self.id
 
-    def __init__(self, name, email, password):
-        self.name = name
-        self.email = email
-        self.hash_password(password)
+    def __init__(self, account_id, account_pin):
+        self.account_id = account_id
+        self.account_pin = account_pin
+        # self.email = email
+        # self.hash_password(password)
 
     def __repr__(self):
         return "<User(name='%s', email='%s')>" % (self.name, self.email)

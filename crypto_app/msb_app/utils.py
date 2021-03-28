@@ -11,10 +11,10 @@ from flask_jwt_extended import current_user
 from flask_jwt_extended import create_access_token, create_refresh_token
 from datetime import timedelta
 
-def validate_account(account_id, account_pass):
+def validate_account(account_id, account_pin):
     user = AccountModel.query.filter_by(account_id=account_id).first()
     
-    if not user or not user.verify_password(account_pass):
+    if not user or not user.verify_password(account_pin):
         raise Exception("Please check your login details and try again")
     
     access_token = create_access_token(identity=user.id, expires_delta=timedelta(minutes=30))
