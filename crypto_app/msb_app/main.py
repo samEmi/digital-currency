@@ -1,12 +1,22 @@
-from flask import request, current_app, jsonify, flash, Blueprint
+from flask import request, current_app, jsonify, flash, Blueprint, render_template
 from .utils import *
 import json
 import requests
 from crypto_utils.signatures import SignerBlindSignature
 from crypto_utils.conversions import SigConversion
 from flask_jwt_extended import jwt_required
+import os
 
 main = Blueprint('main', __name__, template_folder='templates')
+
+@main.route('/')
+def index():
+    app_name = os.getenv("APP_NAME")
+    if not app_name:
+        app_name = "MSB Interface"
+
+    return render_template('index.html', name=app_name)
+
 
 @main.route('/key_setup', methods=['GET'])
 def key_setup():
