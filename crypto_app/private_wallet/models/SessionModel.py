@@ -1,6 +1,6 @@
 # SessionModel.py
 
-from . import db
+from .. import db
 
 
 class Session(db.Model):

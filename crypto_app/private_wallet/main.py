@@ -59,6 +59,7 @@ def withdraw_request(headers):
     if access_token is None:
         return redirect(url_for('auth.login'))
     return render_template('withdraw_tokens.html', now=localtime())
+    
 
 @main.route('/withdraw_request', methods=['POST'])
 def withdraw_tokens_from_acc():

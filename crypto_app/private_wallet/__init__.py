@@ -16,6 +16,9 @@ def create_app():
     app.config['msb3'] = 'msb3:5000'
     app.config['msb4'] = 'msb4:5000'
     app.config['msb5'] = 'msb5:5000'
+
+    current_app.config['username'] = None
+    current_app.config['password'] = None
     
     db.init_app(app)
 

@@ -4,6 +4,7 @@ from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask import current_app
 from flask_jwt_extended import create_access_token, create_refresh_token
 from datetime import timedelta
+from .models.SessionModel import Session
 
 auth = Blueprint('auth', __name__, template_folder='templates')
 
@@ -24,8 +25,8 @@ def login_post():
         #TODO: are these access tokens necessary
         access_token = create_access_token(identity=data['username'], expires_delta=timedelta(minutes=30))
         refresh_token = create_refresh_token(identity=data['username'], expires_delta=timedelta(minutes=30))
-        SessionModel.delete()
-        SessionModel(access_token=access_token,
+        Session.delete()
+        Session(access_token=access_token,
                      refresh_token=refresh_token).save()
         return redirect(url_for('main.withdraw_tokens_from_acc'))
     else:
