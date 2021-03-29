@@ -57,14 +57,14 @@ def key_setup():
     try:
         access = validate_account(account_id, account_pin)
         sigvar = gen_challenge_handler(access['userid'], number, timestamp)
-        resp = jsonify({
+        resp = {
             'access': access['access'],
             'refresh': access['refresh'],
             'pub_key': sigvar['pub_key'],
             'challenge': sigvar['challenge'],
-            'expiration': sigvar['expiration']
-        })
-        return resp, 201
+            'expiration': sigvar['expiration'].__str__()
+        }
+        return json.dumps(resp), 201
     except Exception as e:
         resp = jsonify({
             'message': "Unauthorised: " + str(e)

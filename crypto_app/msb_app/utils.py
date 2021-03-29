@@ -80,6 +80,7 @@ def gen_challenge_handler(userid: int, number: int, timestamp: int):
         'challenge': challenge,
         'expiration': key_expiration
     }
+ 
     return resp
 
 def verify_blind_signature():

@@ -40,6 +40,7 @@ def handle_challenges(tokens: TokenModel, resp: dict, timestamp):
     return res, updated_tokens
 
 def get_token(provider_id, pubkey, timestamp, expiration, value=1):
+    pubkey = SigConversion.convert_dict_modint(pubkey)
     signer = UserBlindSignature(pubkey)
     token_model = TokenModel(p_id=provider_id, 
                              signer=signer, 

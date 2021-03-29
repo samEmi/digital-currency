@@ -88,14 +88,12 @@ def withdraw_tokens_from_acc(headers):
     if res.status_code == 400:      
         flash(res.json().get('message'), 'withdraw_fail')
         return redirect(url_for('main.withdraw_tokens_from_acc'))
-    
-    res = res.json()
-    # generate list of tokens
-    tokens = [get_token(provider_id=msb_id, pubkey=res.get('pub_key'), 
+     
+    tokens = [get_token(provider_id=msb_id, pubkey=res.json().get('pub_key'), 
                         timestamp=params['timestamp'], 
-                        expiration=res.get('expiration')) 
+                        expiration=res.json().get('expiration')) 
                         for _ in range(params['total_value'])
-            ]    
+            ]     
     
     try:
         # generates the challenge response for each token
