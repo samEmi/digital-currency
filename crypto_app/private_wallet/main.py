@@ -143,12 +143,13 @@ def send_tokens_to_merchant(headers):
     '''
     merchant_id = str(request.form.get('merchant_id'))
     total_value = int(request.form.get('total_value'))
-    timestamp = int(dateutil.parser.parse(request.form.get('timestamp')).timestamp())
+    timestamp = int(dateutil.parser.parse(request.form.get('time')).timestamp())
 
     try:
         # get tokens from wallet database 
         # TODO: implement support for list of values 
         tokens = get_tokens_from_wallet(total_value, timestamp)
+        print("here", flush=True)
 
         params = {
             'total_value': total_value,
@@ -158,8 +159,10 @@ def send_tokens_to_merchant(headers):
         }
 
         # request contract which will have to be signed with tokens private keys
+        print("here", flush=True)
         res = requests.get('http://{}/request_contract'.format(current_app.config[merchant_id]), params=params)
         nonce = res.json().get('nonce')
+        print("here", flush=True)
         
         # get the list of signature proofs
         blind_signatures, signatures = [], []
@@ -179,11 +182,11 @@ def send_tokens_to_merchant(headers):
 
         # handle error codes
         if res.status_code == 400:
-            flash("Invalid input", '')
+            flash("Invalid input", 'send_fail')
             return render_template('withdraw_tokens.html')
 
         if res.status_code == 400:
-            flash("Invalid input", '')
+            flash("Invalid input", 'send_fail')
             return render_template('withdraw_tokens.html')
 
         # save payment information
@@ -192,9 +195,11 @@ def send_tokens_to_merchant(headers):
                                 timestamp=params['timestamp'], payed=True, receiver=merchant_id,
                                 signature=res.get('signature'), pubkey=res.get('pubkey'))
             contract.save_to_db()
+            flash("Payment completed successfully", 'send_success')
+            #TODO: remove tokens from db            
 
     except Exception as e:
-        flash(str(e))
+        flash(str(e), 'send_fail')
         return render_template('send_tokens.html')
 
 

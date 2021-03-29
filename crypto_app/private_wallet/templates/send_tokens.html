@@ -6,14 +6,14 @@
 <div class="column is-4 is-offset-4">
     <h3 class="title">Send tokens</h3>
     <div class="box">
-        {% with messages = get_flashed_messages(category_filter=["post_keys", "generate_keys"]) %}
+        {% with messages = get_flashed_messages(category_filter=["send_fail"]) %}
             {% if messages %}
                 <div class="notification is-danger">
                     {{ messages[0]}}.
                 </div>
             {% endif %}
         {% endwith %}
-        {% with messages = get_flashed_messages(category_filter=["keygen_success"]) %}
+        {% with messages = get_flashed_messages(category_filter=["send_success"]) %}
             {% if messages %}
                 <div class="notification is-success">
                     {{ messages[0]}}.

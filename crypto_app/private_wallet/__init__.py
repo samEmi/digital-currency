@@ -19,8 +19,11 @@ def create_app():
     app.config['msb4'] = 'msb4:5000'
     app.config['msb5'] = 'msb5:5000'
 
-    app.config['username'] = None
-    app.config['password'] = None
+
+    app.config['pos1'] = '127.0.0.1:7000'
+    #TODO: need to configure params properly
+    app.config['username'] = "123"
+    app.config['password'] = "123"
     
     db.init_app(app)
     jwt.init_app(app)
