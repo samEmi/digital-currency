@@ -59,6 +59,7 @@ def key_setup():
         sigvar = gen_challenge_handler(access['userid'], number, timestamp)
         resp = {
             'access': access['access'],
+            'userid': access['userid'],            
             'refresh': access['refresh'],
             'pub_key': sigvar['pub_key'],
             'challenge': sigvar['challenge'],
@@ -85,11 +86,10 @@ def withdraw_tokens():
         })
         return resp, 400
     
-    print("here\n", flush=True)
     es = data.get('es')
     timestamp = data.get('timestamp')
-    resp = json.dumps(gen_proofs_handler(es, timestamp))
-    print("here\n", flush=True)
+    userid = data.get('userid')
+    resp = json.dumps(gen_proofs_handler(es, timestamp, userid))
     return resp, 201
 
 

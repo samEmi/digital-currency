@@ -108,7 +108,7 @@ def withdraw_tokens_from_acc(headers):
             if res.status_code == 201:
                 data = res.json()
                 save_tokens(data, tokens, msb_id)
-                flash("Tokens have been signed successfully!", 'withdraw_success')
+                flash("Tokens have been signed successfully", 'withdraw_success')
                 return render_template('withdraw_tokens.html')
             else:
                 flash("Invalid input", 'withdraw_fail')

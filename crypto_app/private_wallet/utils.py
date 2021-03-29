@@ -35,7 +35,8 @@ def handle_challenges(pubkey, tokens: TokenModel, resp: dict, timestamp):
     
     res = {
         'timestamp': timestamp,
-        'es': es
+        'es': es,
+        'userid': resp.get('userid')
     }
     
     return res, updated_tokens

@@ -27,13 +27,14 @@ def validate_account(account_id, account_pin):
     }
     return resp
 
-def gen_proofs_handler(es, timestamp):
+def gen_proofs_handler(es, timestamp, userid):
     signer = current_app.config['signer']
     proofs = []
+    user = AccountModel.query.get(userid)
     # iterate through the challenge responses received
     for x in es:
         # retrieve SigVarsModel object for user so we can populate the signer with u and d
-        sigvars = current_user.get_sigvar(timestamp)
+        sigvars = user.get_sigvar(timestamp)
         if sigvars:
             signer.d = sigvars.d
             signer.u = sigvars.u
