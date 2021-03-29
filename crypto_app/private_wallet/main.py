@@ -89,27 +89,26 @@ def withdraw_tokens_from_acc(headers):
         flash(res.json().get('message'), 'withdraw_fail')
         return redirect(url_for('main.withdraw_tokens_from_acc'))
     
-    res = res.json()
-    # generate list of tokens
-    tokens = [get_token(provider_id=msb_id, pubkey=res.get('pub_key'), 
+    pubkey = SigConversion.convert_dict_modint(res.json().get('pub_key'))
+    tokens = [get_token(provider_id=msb_id, pubkey=pubkey, 
                         timestamp=params['timestamp'], 
-                        expiration=res.get('expiration')) 
+                        expiration=res.json().get('expiration')) 
                         for _ in range(params['total_value'])
-            ]    
+            ]     
     
     try:
         # generates the challenge response for each token
-        es, tokens = handle_challenges(tokens, res.json(), params['timestamp'])
+        es, tokens = handle_challenges(pubkey, tokens, res.json(), params['timestamp'])
         try:
             # use access tokens in order to not be required to check account details every time            
             headers = {
-              'Authorization': "Bearer " + res.get('access')
+              'Authorization': "Bearer " + res.json().get('access')
             }
-            res = requests.post("http://%s/withdraw_tokens" % current_app.config[msb_id], json=json.dumps(es))
+            res = requests.post("http://%s/withdraw_tokens" % current_app.config[msb_id], json=json.dumps(es), headers=headers)
             if res.status_code == 201:
                 data = res.json()
                 save_tokens(data, tokens, msb_id)
-                flash("Tokens have been signed successfully!", 'withdraw_success')
+                flash("Tokens have been signed successfully", 'withdraw_success')
                 return render_template('withdraw_tokens.html')
             else:
                 flash("Invalid input", 'withdraw_fail')
@@ -144,23 +143,26 @@ def send_tokens_to_merchant(headers):
     '''
     merchant_id = str(request.form.get('merchant_id'))
     total_value = int(request.form.get('total_value'))
-    timestamp = int(dateutil.parser.parse(request.form.get('timestamp')).timestamp())
+    timestamp = int(dateutil.parser.parse(request.form.get('time')).timestamp())
 
     try:
         # get tokens from wallet database 
         # TODO: implement support for list of values 
         tokens = get_tokens_from_wallet(total_value, timestamp)
+        print("here", flush=True)
 
         params = {
             'total_value': total_value,
             'claim_pubkey': tokens[0].pub_key,
-            'token_pubkeys': [token.pub_key for token in tokens],
+            # 'token_pubkeys': [token.pub_key for token in tokens],
             'timestamp': timestamp,
         }
 
         # request contract which will have to be signed with tokens private keys
+        print("here", flush=True)
         res = requests.get('http://{}/request_contract'.format(current_app.config[merchant_id]), params=params)
         nonce = res.json().get('nonce')
+        print("here", flush=True)
         
         # get the list of signature proofs
         blind_signatures, signatures = [], []
@@ -180,11 +182,11 @@ def send_tokens_to_merchant(headers):
 
         # handle error codes
         if res.status_code == 400:
-            flash("Invalid input", '')
+            flash("Invalid input", 'send_fail')
             return render_template('withdraw_tokens.html')
 
         if res.status_code == 400:
-            flash("Invalid input", '')
+            flash("Invalid input", 'send_fail')
             return render_template('withdraw_tokens.html')
 
         # save payment information
@@ -193,9 +195,11 @@ def send_tokens_to_merchant(headers):
                                 timestamp=params['timestamp'], payed=True, receiver=merchant_id,
                                 signature=res.get('signature'), pubkey=res.get('pubkey'))
             contract.save_to_db()
+            flash("Payment completed successfully", 'send_success')
+            #TODO: remove tokens from db            
 
     except Exception as e:
-        flash(str(e))
+        flash(str(e), 'send_fail')
         return render_template('send_tokens.html')
 
 

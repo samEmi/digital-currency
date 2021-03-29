@@ -5,8 +5,8 @@ from Crypto.Hash import SHA256
 from Crypto.PublicKey import ECC
 from Crypto.Signature import DSS
 from charm.toolbox.conversion import Conversion
-from pos_app import db
-from pos_app.utils import *
+from .. import db
+from ..utils import *
 from crypto_utils.conversions import SigConversion
 from crypto_utils.signatures import BlindSignatureVerifier
 
@@ -15,7 +15,8 @@ class Contract(db.Model):
     # customer data
     y = db.Column(db.String(256), primary_key=True)
     claim_pubk_ = db.Column(db.String(), nullable=False)
-    token_pubkeys_ = db.Column(db.Array())
+    #TODO: think about storing the token pubkeys is necessary and how to implement it if so
+    # token_pubkeys_ = db.Column(db.ARRAY(db.String))
     timestamp_ = db.Column(db.Integer)
     payed_ = db.Column(db.Boolean())
     total_value_ = db.Column(db.Integer())
@@ -25,13 +26,16 @@ class Contract(db.Model):
     s1_ = db.Column(db.String)
     s2_ = db.Column(db.String)
 
-    def __init__(self, y: str, pubk: int, token_pubkeys: list, total_value, timestamp):
+    def __init__(self, y: str, pubk: int, total_value, timestamp):
         self.y = y
         self.claim_pubk_ = str(pubk)
-        self.token_pubkeys_ = [str(key) for key in token_pubkeys]
         self.timestamp = timestamp
         self.total_value_ = total_value
         self.payed_ = False
+
+    @property
+    def payed(self):
+        return self.payed_
 
     @payed.setter
     def payed(self, payed):
@@ -53,8 +57,8 @@ class Contract(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    def verify_signature(self, signatures: list):
-        for signature, token_pubkey in zip(signatures, self.token_pubkeys_):
+    def verify_signature(self, signatures: list, token_pubkeys):
+        for signature, token_pubkey in zip(signatures, token_pubkeys):
             # Convert back to bytes
             sig = Conversion.IP2OS(signature)
 
@@ -70,8 +74,8 @@ class Contract(db.Model):
                 print(str(e), file=sys.stderr)
                 return False
 
-    def verify_blind_signature(self, providers: list, blind_signatures: list):
-        for blind_signature, provider, token_pubkey in zip(blind_signatures, providers, self.token_pubkeys_):
+    def verify_blind_signature(self, providers: list, blind_signatures: list, token_pubkeys: list):
+        for blind_signature, provider, token_pubkey in zip(blind_signatures, providers, token_pubkeys):
             sig = SigConversion.convert_dict_modint(json.loads(blind_signature))
             provider_pubk = get_provider_pubkey(provider, self.timestamp)
             verifier = BlindSignatureVerifier(provider_pubk)

@@ -27,13 +27,16 @@ def validate_account(account_id, account_pin):
     }
     return resp
 
-def gen_proofs_handler(es, timestamp):
+
+def gen_proofs_handler(es, timestamp, userid):
     signer = current_app.config['signer']
-    proofs = []
+    pool = []
+    user = AccountModel.query.get(userid)
     # iterate through the challenge responses received
     for x in es:
+        print("here", flush=True)
         # retrieve SigVarsModel object for user so we can populate the signer with u and d
-        sigvars = current_user.get_sigvar(timestamp)
+        sigvars = user.get_sigvar(timestamp)
         if sigvars:
             signer.d = sigvars.d
             signer.u = sigvars.u
@@ -42,15 +45,16 @@ def gen_proofs_handler(es, timestamp):
 
             # do the appropriate conversions so that we can serialize
             x['e'] = SigConversion.strlist2modint(x.get('e'))
-            proofs = SigConversion.convert_dict_strlist(signer.get_proofs(x))
-            hash_tmp = SHA256Hash().new(json.dumps(proofs).encode())
+            proof = SigConversion.convert_dict_strlist(signer.get_proofs(x))
+            hash_tmp = SHA256Hash().new(json.dumps(proof).encode())
             hash_proof = Conversion.OS2IP(hash_tmp.digest())
-
-            proofs.append(hash_proof)
-
+            pool.append(proof)
+            
+    print(len(pool), flush=True)
+    
     resp = {
         'timestamp': timestamp,
-        'hash_proofs': proofs
+        'hash_proofs': pool
     }
 
     return resp
@@ -80,6 +84,7 @@ def gen_challenge_handler(userid: int, number: int, timestamp: int):
         'challenge': challenge,
         'expiration': key_expiration
     }
+ 
     return resp
 
 def verify_blind_signature():

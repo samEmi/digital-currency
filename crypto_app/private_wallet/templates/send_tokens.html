@@ -6,14 +6,14 @@
 <div class="column is-4 is-offset-4">
     <h3 class="title">Send tokens</h3>
     <div class="box">
-        {% with messages = get_flashed_messages(category_filter=["post_keys", "generate_keys"]) %}
+        {% with messages = get_flashed_messages(category_filter=["send_fail"]) %}
             {% if messages %}
                 <div class="notification is-danger">
                     {{ messages[0]}}.
                 </div>
             {% endif %}
         {% endwith %}
-        {% with messages = get_flashed_messages(category_filter=["keygen_success"]) %}
+        {% with messages = get_flashed_messages(category_filter=["send_success"]) %}
             {% if messages %}
                 <div class="notification is-success">
                     {{ messages[0]}}.
@@ -21,11 +21,6 @@
             {% endif %}
         {% endwith %}
         <form method="POST" action="/send_to_merchant_request">
-            <div class="field">
-                <div class="control">
-                    <input class="input is-large" type="number" name="total_alue" placeholder="Total value to be sent" autofocus="">
-                </div>
-            </div>
             <div class="field">
                 <div class="control">
                     <input class="input is-large" type="string" name="merchant_id" placeholder="Merchant id" autofocus="">

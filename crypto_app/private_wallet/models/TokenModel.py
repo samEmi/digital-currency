@@ -13,7 +13,7 @@ from .. import db
 class TokenModel(db.Model):
     id_ = db.Column(db.Integer, primary_key=True)
     value_ = db.Column(db.Integer())
-    expiration = db.Column(db.DateTime())
+    expiration_ = db.Column(db.DateTime())
     p_id_ = db.Column(db.Integer)
     key_pair_ = db.Column(db.LargeBinary)
     user_blind_sig_ = db.Column(db.String)
@@ -31,7 +31,7 @@ class TokenModel(db.Model):
             self.key_pair_ = ECC.generate(curve='P-256').export_key(format='DER')
             self.user_blind_sig_ = signer.encode() if signer is not None else None
             self.interval_timestamp_ = interval
-            self.expiration = expiration
+            self.expiration_ = expiration
 
     @property
     def id(self) -> int:

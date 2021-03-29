@@ -9,7 +9,6 @@ from dateutil.easter import *
 from datetime import date
 from flask_jwt_extended import JWTManager
 
-# now = parse("Tues March 23 17:13:46 UTC 2020")
 today = date.today()
 rdelta = relativedelta(easter(2021), today)
 
@@ -37,6 +36,10 @@ def create_app():
     app.config['msb3'] = 'msb3:5000'
     app.config['msb4'] = 'msb4:5000'
     app.config['msb5'] = 'msb5:5000'
+
+    # login_manager = LoginManager()
+    # login_manager.login_view = 'main.login'
+    # login_manager.init_app(app)
 
     db.init_app(app)
     jwt.init_app(app)

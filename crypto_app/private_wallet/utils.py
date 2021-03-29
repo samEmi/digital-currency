@@ -7,7 +7,7 @@ from crypto_utils.conversions import SigConversion
 from crypto_utils.signatures import UserBlindSignature
 from Crypto.Hash.SHA256 import SHA256Hash
 
-def handle_challenges(tokens: TokenModel, resp: dict, timestamp):
+def handle_challenges(pubkey, tokens: TokenModel, resp: dict, timestamp):
     """
     Utility function that takes care of type conversions and ultimately calls the signing function
     :param signer_type: Whether a blind signature is being requested from a CP or an AP.
@@ -26,7 +26,8 @@ def handle_challenges(tokens: TokenModel, resp: dict, timestamp):
 
     # blind the tokens using challenge
     for token in tokens:
-        signer = token.signer
+        # signer = token.signer
+        signer = UserBlindSignature(pubkey)
         message = Conversion.OS2IP(token.public_key)
         es.append(SigConversion.convert_dict_strlist(signer.challenge_response(challenge, message)))
         token.signer = signer
@@ -34,7 +35,8 @@ def handle_challenges(tokens: TokenModel, resp: dict, timestamp):
     
     res = {
         'timestamp': timestamp,
-        'es': es
+        'es': es,
+        'userid': resp.get('userid')
     }
     
     return res, updated_tokens
@@ -50,12 +52,11 @@ def get_token(provider_id, pubkey, timestamp, expiration, value=1):
 
 def get_tokens_from_wallet(total_value, timestamp):
     #TODO: implement denominations
-    tokens = []
-    for _ in range(total_value):
-        #TODO: make this search more efficient
-        token = TokenModel.query().filter(TokenModel.expiration_ < timestamp).first()
-        if token is None: raise Exception('Insufficient funds for current payment')
-        tokens.append(token)
+    # tokens = list(TokenModel.query.filter(TokenModel.expiration_ < timestamp).all())
+    tokens = TokenModel.query.all()
+    print(len(tokens), flush=True)
+    if len(tokens) < total_value: raise Exception("Insufficient funds")
+    tokens = tokens[0:total_value]
     return tokens
 
 def save_tokens(resp: dict, tokens: list, provider: str):
@@ -68,6 +69,10 @@ def save_tokens(resp: dict, tokens: list, provider: str):
     :param policy: The policy ID for which the signatures were requested.
     :return: None
     """
+    # print(len(tokens), flush=True)
+    # print(len(resp.get('hash_proofs')), flush=True)
+
     for proof_hash, token in zip(resp.get('hash_proofs'), tokens):
         token.proof_hash = proof_hash
         token.save_to_db()
+        print("saved", flush=True)        
