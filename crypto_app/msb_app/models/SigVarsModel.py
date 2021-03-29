@@ -9,7 +9,6 @@ class SigVarsModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     timestamp = db.Column(db.Integer)
-    #  = db.Column(db.Integer)
     u_ = db.Column(db.String)
     d_ = db.Column(db.String)
     s1_ = db.Column(db.String)

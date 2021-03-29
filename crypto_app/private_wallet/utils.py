@@ -19,7 +19,6 @@ def handle_challenges(pubkey, tokens: TokenModel, resp: dict, timestamp):
     # get info received from signer msb
     # pubk = SigConversion.convert_dict_modint(resp.get('public_key'))
     challenge = SigConversion.convert_dict_modint(resp.get('challenge'))
-    timestamp = resp.get('timestamp')
     
     es = []
     updated_tokens = []
@@ -34,6 +33,7 @@ def handle_challenges(pubkey, tokens: TokenModel, resp: dict, timestamp):
         updated_tokens.append(token)
     
     res = {
+        # 'timestamp': timestamp,
         'timestamp': timestamp,
         'es': es,
         'userid': resp.get('userid')

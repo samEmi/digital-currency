@@ -99,6 +99,7 @@ def withdraw_tokens_from_acc(headers):
     try:
         # generates the challenge response for each token
         es, tokens = handle_challenges(pubkey, tokens, res.json(), params['timestamp'])
+        
         try:
             # use access tokens in order to not be required to check account details every time            
             headers = {

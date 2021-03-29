@@ -30,11 +30,13 @@ def validate_account(account_id, account_pin):
 
 def gen_proofs_handler(es, timestamp, userid):
     signer = current_app.config['signer']
-    pool = []
+    pool = list()
     user = AccountModel.query.get(userid)
-    # iterate through the challenge responses received
+
+    # print(len(SigVarsModel.query.filter_by(user_id=userid, timestamp=timestamp).all()))
+    # print(len(SigVarsModel.query.filter_by(user_id=userid).all()))
+    
     for x in es:
-        print("here", flush=True)
         # retrieve SigVarsModel object for user so we can populate the signer with u and d
         sigvars = user.get_sigvar(timestamp)
         if sigvars:
@@ -48,10 +50,10 @@ def gen_proofs_handler(es, timestamp, userid):
             proof = SigConversion.convert_dict_strlist(signer.get_proofs(x))
             hash_tmp = SHA256Hash().new(json.dumps(proof).encode())
             hash_proof = Conversion.OS2IP(hash_tmp.digest())
-            pool.append(proof)
-            
-    print(len(pool), flush=True)
-    
+            # print("here", flush=True)
+            pool.append(hash_proof)
+
+    # print(len(pool), flush=True)
     resp = {
         'timestamp': timestamp,
         'hash_proofs': pool
