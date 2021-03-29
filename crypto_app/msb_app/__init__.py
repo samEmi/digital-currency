@@ -9,7 +9,6 @@ from dateutil.easter import *
 from datetime import date
 from flask_jwt_extended import JWTManager
 
-# now = parse("Tues March 23 17:13:46 UTC 2020")
 today = date.today()
 rdelta = relativedelta(easter(2021), today)
 

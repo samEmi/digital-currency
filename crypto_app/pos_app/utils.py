@@ -1,6 +1,6 @@
 import sys
 from Crypto import Random as rd
-from pos_app.models.ContractModel import Contract
+from .models.ContractModel import Contract
 from flask import current_app
 from charm.toolbox.conversion import Conversion
 

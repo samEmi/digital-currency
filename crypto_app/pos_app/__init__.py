@@ -9,11 +9,8 @@ from dateutil.easter import *
 from dateutil.rrule import *
 from datetime import *
 
-# init vars in order to hardcode pub key expiration date
-now = parse("Tues March 23 17:13:46 UTC 2020")
-today = now.date()
-year = rrule(YEARLY,dtstart=now,bymonth=8,bymonthday=13,byweekday=FR)[0].year
-rdelta = relativedelta(easter(year), today)
+today = date.today()
+rdelta = relativedelta(easter(2021), today)
 
 db = SQLAlchemy()
 
@@ -32,7 +29,7 @@ def create_app():
     app.config['msb5'] = 'msb5:5000'
     
     #TODO: might need to setup account with different msb providers
-    app.config['account_id'] = '1234567898761234'
+    app.config['account_id'] = 'merchant'
     app.config['account_pin'] = '1234'
 
     # initialise public key
@@ -44,7 +41,7 @@ def create_app():
     db.init_app(app)
 
     # blueprint for non-auth parts of app
-    from pos_app.main import main as main_blueprint
+    from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
 
     db.create_all(app=app)
