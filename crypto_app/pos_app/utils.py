@@ -6,7 +6,7 @@ from charm.toolbox.conversion import Conversion
 
 
 class Nonce:
-    def __init__(self, id: int, pubkeys: list=[], n=None):
+    def __init__(self, id: int, n=None):
         if n is None:
             self.n = 256
         else:
@@ -14,7 +14,7 @@ class Nonce:
 
         self.y = self.__generate_nonce__()
         self.id = id
-        self.pubkeys = pubkeys
+        # self.pubkeys = pubkeys
 
     def __generate_nonce__(self) -> str:
         # Generate cryptographically secure random number
@@ -29,7 +29,7 @@ class Nonce:
 
     def save(self, total_value, timestamp) -> bool:
         # Add the generated uuid to the db
-        new_user = Contract(self.y, self.id, self.pubkeys, total_value, timestamp)
+        new_user = Contract(self.y, self.id, total_value, timestamp)
 
         # Database interaction can throw exceptions
         try:

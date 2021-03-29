@@ -153,7 +153,7 @@ def send_tokens_to_merchant(headers):
         params = {
             'total_value': total_value,
             'claim_pubkey': tokens[0].pub_key,
-            'token_pubkeys': [token.pub_key for token in tokens],
+            # 'token_pubkeys': [token.pub_key for token in tokens],
             'timestamp': timestamp,
         }
 
