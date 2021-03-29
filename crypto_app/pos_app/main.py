@@ -5,13 +5,12 @@ import requests
 from flask import request, Response, jsonify, render_template, redirect, url_for, flash, Blueprint
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, current_user
 from crypto_utils.conversions import SigConversion
-from .models.ContractModel import Contract
+# from .models.ContractModel import Contract
 from .utils import *
 from flask import current_app
 import requests
 
 main = Blueprint('main', __name__, template_folder='templates')
-msb_id = current_app.config['msb1']
 
 @main.route('/request_contract', methods=['GET'])
 def request_contract():
@@ -61,7 +60,8 @@ def send_tokens():
         'account_id': current_app.config['account_id'],
         'account_pass': current_app.config['account_pass'],
     }
-    
+    #TODO: remove hardcoded msb_id
+    msb_id = current_app.config['msb1']
     res = requests.post('http://{}/receive_tokens_into_account'.format(msb_id), json=json.dumps(data), params=params)
 
     if res.status_code == 400:

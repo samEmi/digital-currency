@@ -4,7 +4,6 @@ from .models.ContractModel import Contract
 from flask import current_app
 from charm.toolbox.conversion import Conversion
 
-signer = current_app.config['signer']
 
 class Nonce:
     def __init__(self, id: int, pubkeys: list=[], n=None):
@@ -45,4 +44,5 @@ def get_provider_pubkey():
     pass
 
 def get_merchant_signature(nonce: str):
+    signer = current_app.config['signer']
     return Conversion.OS2IP(signer.sign(nonce))

@@ -5,8 +5,8 @@ from Crypto.Hash import SHA256
 from Crypto.PublicKey import ECC
 from Crypto.Signature import DSS
 from charm.toolbox.conversion import Conversion
-from pos_app import db
-from pos_app.utils import *
+from .. import db
+from ..utils import *
 from crypto_utils.conversions import SigConversion
 from crypto_utils.signatures import BlindSignatureVerifier
 
@@ -15,7 +15,7 @@ class Contract(db.Model):
     # customer data
     y = db.Column(db.String(256), primary_key=True)
     claim_pubk_ = db.Column(db.String(), nullable=False)
-    token_pubkeys_ = db.Column(db.Array())
+    token_pubkeys_ = db.Column(db.ARRAY(db.String))
     timestamp_ = db.Column(db.Integer)
     payed_ = db.Column(db.Boolean())
     total_value_ = db.Column(db.Integer())
@@ -32,6 +32,10 @@ class Contract(db.Model):
         self.timestamp = timestamp
         self.total_value_ = total_value
         self.payed_ = False
+
+    @property
+    def payed(self):
+        return self.payed_
 
     @payed.setter
     def payed(self, payed):
