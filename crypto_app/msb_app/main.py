@@ -85,9 +85,11 @@ def withdraw_tokens():
         })
         return resp, 400
     
+    print("here\n", flush=True)
     es = data.get('es')
     timestamp = data.get('timestamp')
     resp = json.dumps(gen_proofs_handler(es, timestamp))
+    print("here\n", flush=True)
     return resp, 201
 
 

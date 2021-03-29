@@ -88,8 +88,9 @@ def withdraw_tokens_from_acc(headers):
     if res.status_code == 400:      
         flash(res.json().get('message'), 'withdraw_fail')
         return redirect(url_for('main.withdraw_tokens_from_acc'))
-     
-    tokens = [get_token(provider_id=msb_id, pubkey=res.json().get('pub_key'), 
+    
+    pubkey = SigConversion.convert_dict_modint(res.json().get('pub_key'))
+    tokens = [get_token(provider_id=msb_id, pubkey=pubkey, 
                         timestamp=params['timestamp'], 
                         expiration=res.json().get('expiration')) 
                         for _ in range(params['total_value'])
@@ -97,13 +98,13 @@ def withdraw_tokens_from_acc(headers):
     
     try:
         # generates the challenge response for each token
-        es, tokens = handle_challenges(tokens, res.json(), params['timestamp'])
+        es, tokens = handle_challenges(pubkey, tokens, res.json(), params['timestamp'])
         try:
             # use access tokens in order to not be required to check account details every time            
             headers = {
-              'Authorization': "Bearer " + res.get('access')
+              'Authorization': "Bearer " + res.json().get('access')
             }
-            res = requests.post("http://%s/withdraw_tokens" % current_app.config[msb_id], json=json.dumps(es))
+            res = requests.post("http://%s/withdraw_tokens" % current_app.config[msb_id], json=json.dumps(es), headers=headers)
             if res.status_code == 201:
                 data = res.json()
                 save_tokens(data, tokens, msb_id)

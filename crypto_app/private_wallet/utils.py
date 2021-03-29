@@ -7,7 +7,7 @@ from crypto_utils.conversions import SigConversion
 from crypto_utils.signatures import UserBlindSignature
 from Crypto.Hash.SHA256 import SHA256Hash
 
-def handle_challenges(tokens: TokenModel, resp: dict, timestamp):
+def handle_challenges(pubkey, tokens: TokenModel, resp: dict, timestamp):
     """
     Utility function that takes care of type conversions and ultimately calls the signing function
     :param signer_type: Whether a blind signature is being requested from a CP or an AP.
@@ -26,7 +26,8 @@ def handle_challenges(tokens: TokenModel, resp: dict, timestamp):
 
     # blind the tokens using challenge
     for token in tokens:
-        signer = token.signer
+        # signer = token.signer
+        signer = UserBlindSignature(pubkey)
         message = Conversion.OS2IP(token.public_key)
         es.append(SigConversion.convert_dict_strlist(signer.challenge_response(challenge, message)))
         token.signer = signer
@@ -40,7 +41,6 @@ def handle_challenges(tokens: TokenModel, resp: dict, timestamp):
     return res, updated_tokens
 
 def get_token(provider_id, pubkey, timestamp, expiration, value=1):
-    pubkey = SigConversion.convert_dict_modint(pubkey)
     signer = UserBlindSignature(pubkey)
     token_model = TokenModel(p_id=provider_id, 
                              signer=signer, 
