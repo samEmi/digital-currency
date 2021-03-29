@@ -294,6 +294,7 @@ app.post('/channels/:channelName/chaincodes/:chaincodeName', async function (req
 
 		const response_payload = {
 			result: message,
+			latency: latency,
 			error: null,
 			errorData: null
 		}
