@@ -45,7 +45,7 @@ class User(Thread):
                 total += r["latency"]
             # else:
             #     print(":(((", r, "Thread name ", self.name)
-        self.latencyList.append(total/success)
+        if success: self.latencyList.append(total/success)
     
 
     def transfer(self, recipient, amount):
