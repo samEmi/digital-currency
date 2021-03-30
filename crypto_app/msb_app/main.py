@@ -89,10 +89,17 @@ def withdraw_tokens():
     es = data.get('es')
     timestamp = data.get('timestamp')
     userid = data.get('userid')
+    try:
+        res = gen_proofs_handler(es, timestamp, userid)
+        resp = json.dumps(res)
+        # should connect to fabric here and call burn function on behalf of the user's account
+        return resp, 201
+    except Exception as e:
+        resp = jsonify({
+            'message': str(e)
+        })
+        return resp, 400
     
-    res = gen_proofs_handler(es, timestamp, userid)
-    resp = json.dumps(res)
-    return resp, 201
 
 
 @main.route('/validate_tokens', methods=['POST'])

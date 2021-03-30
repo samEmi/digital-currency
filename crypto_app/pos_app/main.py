@@ -19,26 +19,20 @@ def request_contract():
     # get contract details
     total_value = int(request.args.get('total_value'))
     timestamp = int(request.args.get('timestamp'))
-    # token_pubkeys = list(request.args.get('token_pubkeys'))
     claim_pubkey = request.args.get('claim_pubkey')
    
     if claim_pubkey is None or total_value is None:
         return Response("Bad Request: Required parameters are not set.", status=400, mimetype='application/json')
     
-    #TODO: implement a different check so as not to reveal the amount
-    # if len(token_pubkeys) < total_value: 
-    #     return Response("Insufficient funds were sent", status=402, mimetype='application/json')
-    
     nonce = Nonce(id=claim_pubkey)
     saved = nonce.save(total_value, timestamp)
-    if saved: return jsonify({'contract': nonce.y}), 201
+    if saved: return jsonify({'nonce': nonce.y}), 201
     else:
         return Response("{'content': 'Something went wrong saving contract info.'}", status=501, mimetype='application/json')
 
 
 @main.route('/send_tokens', methods=['POST'])
 def send_tokens():
-    #TODO: verity amt sent
     data = json.loads(request.get_json())
     nonce = data.get('nonce')
     contract = Contract.find(nonce)
