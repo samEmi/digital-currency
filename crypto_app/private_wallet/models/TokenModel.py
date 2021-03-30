@@ -13,7 +13,7 @@ from .. import db
 class TokenModel(db.Model):
     id_ = db.Column(db.Integer, primary_key=True)
     value_ = db.Column(db.Integer())
-    expiration_ = db.Column(db.DateTime())
+    expiration_ = db.Column(db.Integer)
     p_id_ = db.Column(db.Integer)
     key_pair_ = db.Column(db.LargeBinary)
     user_blind_sig_ = db.Column(db.String)

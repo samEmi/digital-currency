@@ -13,6 +13,7 @@ from flask import current_app
 from .utils import *
 import dateutil.parser
 import sys
+import datetime
 
 main = Blueprint('main', __name__, template_folder='templates')
 
@@ -88,11 +89,14 @@ def withdraw_tokens_from_acc(headers):
     if res.status_code == 400:      
         flash(res.json().get('message'), 'withdraw_fail')
         return redirect(url_for('main.withdraw_tokens_from_acc'))
-    
+    # print(res.json().get('expiration'), flush=True)
+    # print(datetime.datetime.fromtimestamp(params['timestamp']), flush=True)
+    expiration = dateutil.parser.parse(res.json().get('expiration')).timestamp()
+    print(expiration, flush=True)
     pubkey = SigConversion.convert_dict_modint(res.json().get('pub_key'))
     tokens = [get_token(provider_id=msb_id, pubkey=pubkey, 
                         timestamp=params['timestamp'], 
-                        expiration=res.json().get('expiration')) 
+                        expiration=expiration) 
                         for _ in range(params['total_value'])
             ]     
     
