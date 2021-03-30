@@ -57,8 +57,7 @@ def gen_proofs_handler(es, timestamp, userid):
     resp = {
         'timestamp': timestamp,
         'hash_proofs': pool
-    }
-
+    } 
     return resp
 
 def gen_challenge_handler(userid: int, number: int, timestamp: int):

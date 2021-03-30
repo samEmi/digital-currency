@@ -89,10 +89,8 @@ def withdraw_tokens_from_acc(headers):
     if res.status_code == 400:      
         flash(res.json().get('message'), 'withdraw_fail')
         return redirect(url_for('main.withdraw_tokens_from_acc'))
-    # print(res.json().get('expiration'), flush=True)
-    # print(datetime.datetime.fromtimestamp(params['timestamp']), flush=True)
+
     expiration = dateutil.parser.parse(res.json().get('expiration')).timestamp()
-    print(expiration, flush=True)
     pubkey = SigConversion.convert_dict_modint(res.json().get('pub_key'))
     tokens = [get_token(provider_id=msb_id, pubkey=pubkey, 
                         timestamp=params['timestamp'], 
@@ -154,26 +152,26 @@ def send_tokens_to_merchant(headers):
         # get tokens from wallet database 
         # TODO: implement support for list of values 
         tokens = get_tokens_from_wallet(total_value, timestamp)
-        print("here", flush=True)
+        # print(len(tokens), flush=True)
 
         params = {
             'total_value': total_value,
-            'claim_pubkey': tokens[0].pub_key,
+            'claim_pubkey': tokens[0].public_key,
             # 'token_pubkeys': [token.pub_key for token in tokens],
             'timestamp': timestamp,
         }
 
         # request contract which will have to be signed with tokens private keys
-        print("here", flush=True)
         res = requests.get('http://{}/request_contract'.format(current_app.config[merchant_id]), params=params)
         nonce = res.json().get('nonce')
-        print("here", flush=True)
         
         # get the list of signature proofs
         blind_signatures, signatures = [], []
-        for token in tokens:
+        for token in tokens:           
             blind_signatures.append(token.generate_blind_signature(token.proof_hash))
+            print(token.p_id, flush=True) 
             signatures.append(token.sign(nonce))
+        print("here", flush=True)
         
         proofs = {
             'nonce': nonce,
@@ -181,10 +179,11 @@ def send_tokens_to_merchant(headers):
             'blind_signatures': [json.dumps(SigConversion.convert_dict_strlist(x)) for x in blind_signatures],
             'signatures': signatures,
         }
+        print("here", flush=True)
         
         # send tokens to merchant for validation
         res = requests.post('http://{}/send_tokens'.format(merchant_id), json=proofs)
-
+        print("here", flush=True)
         # handle error codes
         if res.status_code == 400:
             flash("Invalid input", 'send_fail')

@@ -87,11 +87,10 @@ def withdraw_tokens():
         return resp, 400
     
     es = data.get('es')
-    # print(len(es), flush=True)
     timestamp = data.get('timestamp')
     userid = data.get('userid')
+    
     res = gen_proofs_handler(es, timestamp, userid)
-    print(len(res['hash_proofs']), flush=True)
     resp = json.dumps(res)
     return resp, 201
 

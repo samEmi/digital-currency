@@ -75,4 +75,4 @@ def save_tokens(resp: dict, tokens: list, provider: str):
     for proof_hash, token in zip(resp.get('hash_proofs'), tokens):
         token.proof_hash = proof_hash
         token.save_to_db()
-        print("saved", flush=True)        
+        # print("saved", flush=True)        

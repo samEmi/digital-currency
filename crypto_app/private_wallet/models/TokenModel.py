@@ -14,13 +14,13 @@ class TokenModel(db.Model):
     id_ = db.Column(db.Integer, primary_key=True)
     value_ = db.Column(db.Integer())
     expiration_ = db.Column(db.Integer)
-    p_id_ = db.Column(db.Integer)
+    p_id_ = db.Column(db.String)
     key_pair_ = db.Column(db.LargeBinary)
     user_blind_sig_ = db.Column(db.String)
     interval_timestamp_ = db.Column(db.Integer)
     proof_hash_ = db.Column(db.String)
 
-    def __init__(self, p_id: int, value: int = 1, signer: UserBlindSignature = None,
+    def __init__(self, p_id: str, value: int = 1, signer: UserBlindSignature = None,
                  interval: int = None, expiration: 'datetime' = None):
         check = TokenModel.query.filter_by(p_id_=p_id, interval_timestamp_=interval)
         if check.first() is not None:
@@ -119,6 +119,7 @@ class TokenModel(db.Model):
     def generate_blind_signature(self, proof):
         signer = self.signer
         proof = SigConversion.convert_dict_modint(proof)
+        print("here", flush=True)
         return signer.gen_signature(proof)
 
     def save_to_db(self):
