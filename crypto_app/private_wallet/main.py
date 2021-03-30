@@ -166,17 +166,25 @@ def send_tokens_to_merchant(headers):
         blind_signatures, signatures = [], []
         for token in tokens:           
             blind_signatures.append(token.generate_blind_signature(token.proof))
-            signatures.append(token.sign(nonce))
-       
+            signatures.append(token.sign(nonce)[1])
+        
+        
+        token_keys = {}
+        token_keys['token_pubkeys'] = []
+        for token in tokens:
+            token_keys['token_pubkeys'].extend(str(Conversion.OS2IP(token.public_key)))
+        # token_keys = {
+        #     # 'token_pubkeys': [str(Conversion.OS2IP(token.public_key)) for token in tokens]
+        #     'token_pubkeys': [token.public_key for token in tokens]
+        # }        
         proofs = json.dumps({
             'nonce': nonce,
             'providers': [token.p_id for token in tokens],
             'blind_signatures': [json.dumps(SigConversion.convert_dict_strlist(x)) for x in blind_signatures],
             'signatures': signatures,
         })
+        res = requests.post('http://{}/send_tokens'.format(current_app.config[merchant_id]), json=proofs, params=token_keys)            
         
-        res = requests.post('http://{}/send_tokens'.format(current_app.config[merchant_id]), json=proofs)            
-
         # save payment information
         if res.status_code == 200:
             print("200", flush=True)
@@ -194,7 +202,7 @@ def send_tokens_to_merchant(headers):
             return render_template('withdraw_tokens.html')
         else:
             #why is the flash not working?
-            flash("Invalid input", 'send_fail')
+            flash(res.loads.get('message'), 'send_fail')
             return render_template('withdraw_tokens.html')
                     
     except Exception as e:

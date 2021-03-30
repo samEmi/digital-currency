@@ -55,7 +55,7 @@ def get_tokens_from_wallet(total_value, timestamp):
     # tokens = list(TokenModel.query.filter(TokenModel.expiration_ < timestamp).all())
     # print(len(tokens), flush=True)
     tokens = list(TokenModel.query.all())
-    print(len(tokens), flush=True)
+    # print(len(tokens), flush=True)
     if len(tokens) < total_value: raise Exception("Insufficient funds")
     tokens = tokens[0:total_value]
     return tokens

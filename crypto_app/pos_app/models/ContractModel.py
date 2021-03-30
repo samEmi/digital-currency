@@ -68,6 +68,7 @@ class Contract(db.Model):
     def verify_signature(self, signatures: list, token_pubkeys):
         for signature, token_pubkey in zip(signatures, token_pubkeys):
             # Convert back to bytes
+            token_pubkey = Conversion.IP2OS(int(token_pubkey))
             sig = Conversion.IP2OS(signature)
 
             # Verifier setup

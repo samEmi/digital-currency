@@ -35,12 +35,15 @@ def request_contract():
 def send_tokens():
     data = json.loads(request.get_json())
     nonce = data.get('nonce')
-    token_pubkeys = data.get('token_pubkeys')
+    token_pubkeys = list(request.args.get('token_pubkeys'))
+    print(f'Tokens: {len(token_pubkeys)}', flush=True)
+   
     contract = Contract.find(nonce)
     if contract == None: return jsonify({'message': 'No corresponding contract'}), 500
-    
+
     # check if the sender owns the sent tokens
     signatures = data.get('signatures')
+    print(f'Sigs: {len(signatures)}', flush=True)
     if signatures is None or len(signatures) != contract.total_value \
     or contract.verify_signature(signatures, token_pubkeys) == False: 
         return jsonify({'message': 'Invalid Signature'}), 400
@@ -48,7 +51,7 @@ def send_tokens():
     # verify signature from msb
     blind_signatures = data.get('blind_signatures')
     if blind_signatures is None or len(blind_signatures) != contract.total_value \
-    or contract.verify_blind_signature(blind_signatures) == False: 
+    or contract.verify_blind_signature(blind_signatures, token_pubkeys) == False: 
         jsonify({'message': 'Blind signature failed to verify'}), 400
 
     print("good3", flush=True)
