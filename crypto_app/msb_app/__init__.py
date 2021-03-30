@@ -4,13 +4,15 @@ from flask_sqlalchemy import SQLAlchemy
 from crypto_utils.signatures import SignerBlindSignature
 from crypto_utils.conversions import SigConversion
 from charm.toolbox.integergroup import IntegerGroupQ
+import datetime
 from dateutil.relativedelta import *
 from dateutil.easter import *
 from datetime import date
 from flask_jwt_extended import JWTManager
 
-today = date.today()
-rdelta = relativedelta(easter(2021), today)
+today = datetime.datetime.now()
+# rdelta = relativedelta(easter(2021), today)
+rdelta = datetime.timedelta(hours=500)
 
 # init SQLAlchemy so we can use it later in our models
 
