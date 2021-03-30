@@ -164,13 +164,15 @@ def send_tokens_to_merchant(headers):
         # request contract which will have to be signed with tokens private keys
         res = requests.get('http://{}/request_contract'.format(current_app.config[merchant_id]), params=params)
         nonce = res.json().get('nonce')
+        print(nonce, flush=True)
         
         # get the list of signature proofs
         blind_signatures, signatures = [], []
         for token in tokens:           
-            blind_signatures.append(token.generate_blind_signature(token.proof_hash))
+            blind_signatures.append(token.generate_blind_signature(token.proof))
             print(token.p_id, flush=True) 
             signatures.append(token.sign(nonce))
+        
         print("here", flush=True)
         
         proofs = {

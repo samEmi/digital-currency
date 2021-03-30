@@ -1,10 +1,10 @@
 from typing import Tuple
-
+import json
 from Crypto.Hash import SHA256
 from Crypto.PublicKey import ECC
 from Crypto.Signature import DSS
 from charm.toolbox.conversion import Conversion
-
+from sqlalchemy import JSON
 from crypto_utils.conversions import SigConversion
 from crypto_utils.signatures import UserBlindSignature
 from .. import db
@@ -18,7 +18,8 @@ class TokenModel(db.Model):
     key_pair_ = db.Column(db.LargeBinary)
     user_blind_sig_ = db.Column(db.String)
     interval_timestamp_ = db.Column(db.Integer)
-    proof_hash_ = db.Column(db.String)
+    proof_ = db.Column(JSON)
+    # proof_hash_ = db.Column(db.String)
 
     def __init__(self, p_id: str, value: int = 1, signer: UserBlindSignature = None,
                  interval: int = None, expiration: 'datetime' = None):
@@ -102,12 +103,20 @@ class TokenModel(db.Model):
         return self.policy_
 
     @property
-    def proof_hash(self) -> int:
-        return int(self.proof_hash_)
+    def proof(self) -> int:
+        return json.loads(self.proof_)
 
-    @proof_hash.setter
-    def proof_hash(self, hs: int or str) -> None:
-        self.proof_hash_ = str(hs)
+    @proof.setter
+    def proof(self, proof:dict) -> None:
+        self.proof_ = json.dumps(proof)
+
+    # @property
+    # def proof_hash(self) -> int:
+    #     return int(self.proof_hash_)
+
+    # @proof_hash.setter
+    # def proof_hash(self, hs: int or str) -> None:
+    #     self.proof_hash_ = str(hs)
 
     def sign(self, y:str) -> Tuple[int, int]:
         key = self.key_pair
@@ -119,7 +128,6 @@ class TokenModel(db.Model):
     def generate_blind_signature(self, proof):
         signer = self.signer
         proof = SigConversion.convert_dict_modint(proof)
-        print("here", flush=True)
         return signer.gen_signature(proof)
 
     def save_to_db(self):

@@ -69,10 +69,8 @@ def save_tokens(resp: dict, tokens: list, provider: str):
     :param policy: The policy ID for which the signatures were requested.
     :return: None
     """
-    # print(len(tokens), flush=True)
-    # print(len(resp.get('hash_proofs')), flush=True)
 
-    for proof_hash, token in zip(resp.get('hash_proofs'), tokens):
-        token.proof_hash = proof_hash
+    for proof, token in zip(resp.get('proofs'), tokens):
+        token.proof = proof
         token.save_to_db()
-        # print("saved", flush=True)        
+        print("saved", flush=True)        
