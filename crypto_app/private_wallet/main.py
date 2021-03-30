@@ -161,13 +161,13 @@ def send_tokens_to_merchant(headers):
         # request contract which will have to be signed with tokens private keys
         res = requests.get('http://{}/request_contract'.format(current_app.config[merchant_id]), params=params)
         nonce = res.json().get('nonce')
-        
+       
         # get the list of signature proofs
         blind_signatures, signatures = [], []
         for token in tokens:           
             blind_signatures.append(token.generate_blind_signature(token.proof))
             signatures.append(token.sign(nonce))
-        
+       
         proofs = json.dumps({
             'nonce': nonce,
             'providers': [token.p_id for token in tokens],
@@ -175,16 +175,7 @@ def send_tokens_to_merchant(headers):
             'signatures': signatures,
         })
         
-        res = requests.post('http://{}/send_tokens'.format(current_app.config[merchant_id]), json=proofs)
-        
-        # handle error codes
-        if res.status_code == 400:
-            flash("Invalid input", 'send_fail')
-            return render_template('withdraw_tokens.html')
-
-        if res.status_code == 400:
-            flash("Invalid input", 'send_fail')
-            return render_template('withdraw_tokens.html')
+        res = requests.post('http://{}/send_tokens'.format(current_app.config[merchant_id]), json=proofs)            
 
         # save payment information
         if res.status_code == 200:
@@ -200,8 +191,12 @@ def send_tokens_to_merchant(headers):
             balance = len(TokenModel.query.all())
             flash("Payment completed successfully", 'send_success')
             flash(f"Remaining balance: {balance}", 'send_success')
-                      
-
+            return render_template('withdraw_tokens.html')
+        else:
+            #why is the flash not working?
+            flash("Invalid input", 'send_fail')
+            return render_template('withdraw_tokens.html')
+                    
     except Exception as e:
         flash(str(e), 'send_fail')
         return render_template('send_tokens.html')

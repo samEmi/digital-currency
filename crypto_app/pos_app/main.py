@@ -35,19 +35,23 @@ def request_contract():
 def send_tokens():
     data = json.loads(request.get_json())
     nonce = data.get('nonce')
+    token_pubkeys = data.get('token_pubkeys')
     contract = Contract.find(nonce)
     if contract == None: return jsonify({'message': 'No corresponding contract'}), 500
     
-    #TODO: think about whether this check is absolutely redundant since singnatures will be validated by msbs as well?
+    # check if the sender owns the sent tokens
     signatures = data.get('signatures')
-    if signatures is None or len(signatures) != len(contract.token_keys) \
-    or contract.verify_signature(signatures) == False: 
+    if signatures is None or len(signatures) != contract.total_value \
+    or contract.verify_signature(signatures, token_pubkeys) == False: 
         return jsonify({'message': 'Invalid Signature'}), 400
     
-    blind_singatures = data.get('blind_signatures')
-    if signatures is None or len(signatures) != len(contract.token_keys) \
-    or contract.verify_blind_signature(blind_singatures) == False: 
+    # verify signature from msb
+    blind_signatures = data.get('blind_signatures')
+    if blind_signatures is None or len(blind_signatures) != contract.total_value \
+    or contract.verify_blind_signature(blind_signatures) == False: 
         jsonify({'message': 'Blind signature failed to verify'}), 400
+
+    print("good3", flush=True)
 
     # connect to msb which will validate tokens against database of spent tokens
     

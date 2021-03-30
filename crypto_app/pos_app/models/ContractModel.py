@@ -34,6 +34,14 @@ class Contract(db.Model):
         self.payed_ = False
 
     @property
+    def total_value(self):
+        return self.total_value_
+
+    @total_value.setter
+    def total_value(self, value:int):
+        self.total_value_ = value
+
+    @property
     def payed(self):
         return self.payed_
 
