@@ -7,10 +7,10 @@ import time
 
 
 # Gets values for the latency against network size graph
-def latency_against_size(runs):
+def latency_against_size(runs, ):
     avg_latencies = []
     for size in networkSizes:
-        avg_latency = monte_carlo_run(size, runs, transaction=nTransactions)
+        avg_latency = monte_carlo_run(size, runs, transactions=nTransactions)
         print("Avg Latency : ", avg_latency)
         avg_latencies.append(avg_latency)
     return avg_latencies
@@ -19,7 +19,7 @@ def latency_against_size(runs):
 def latency_against_transactions(runs):
     avg_latencies = []
     for transaction in transactions:
-        avg_latency = monte_carlo_run(network_size, runs, transaction=transaction)
+        avg_latency = monte_carlo_run(network_size, runs, transactions=transaction)
         print("Avg Latency : ", avg_latency)
         avg_latencies.append(avg_latency)
     return avg_latencies
@@ -71,20 +71,19 @@ def plot_latency_size(avg_latencies, x, xLabel='Number of users', yLabel="Averag
 
 if __name__ == '__main__':
     # Constants for the latency against network size graph
-    # nTransactions = 5
+    nTransactions = 5
     networkSizes = [2, 10, 25, 50, 100, 200]
-    # avg_latencies = latency_against_size(10)
-    # plot_latency_size(avg_latencies, networkSizes)
+    avg_latencies = latency_against_size(10)
+    plot_latency_size(avg_latencies, networkSizes)
     #----------------------------------------------------------------------------------------------------------
 
     # # Constants for the latency against numberOfTransactions per user graph
-    # network_size = 5
-    # transactions = [5, 10, 25, 50, 75, 100, 150, 200] # each value represents the number of transactions per user for an experiment
-    # avg_latencies = latency_against_transactions(10)
-    # plot_latency_size(avg_latencies, transactions, xLabel='Number of transactions per user', yLabel="Average Latency / ms"
-    #                   , title='Average Latency against Number of Users per transaction')
+    network_size = 5
+    transactions = [5, 10, 25, 50, 75, 100, 150, 200] # each value represents the number of transactions per user for an experiment
+    avg_latencies = latency_against_transactions(10)
+    plot_latency_size(avg_latencies, transactions, xLabel='Number of transactions per user', yLabel="Average Latency / ms"
+                      , title='Average Latency against Number of Users per transaction')
     # #----------------------------------------------------------------------------------------------------------
-    networkSizes = [500, 1000]
     avg_transactions = transactions_against_size(1)
     plot_latency_size(avg_transactions, networkSizes, xLabel='Number of users', yLabel="avg number of transactions in 10 seconds", title='Throughput against number of users')
 
