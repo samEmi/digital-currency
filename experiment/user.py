@@ -1,19 +1,21 @@
 import requests
 import random
 from threading import Thread
+import time
 
 random.seed(10)
 rootUrl = "http://localhost:4000"
 
 class User(Thread):
-    def __init__(self, address, init_value, size, amount, nTransactions, latencyList):
+    def __init__(self, address, init_value, size, amount, stats, nTransactions=0, throughput=False):
           super().__init__()
           self.address = address
           self.value = init_value
           self.size = size
           self.amount = amount
           self.nTransactions = nTransactions
-          self.latencyList = latencyList
+          self.stats = stats
+          self.throughput = throughput
     
     def run(self):
         self.addAsset()
@@ -34,6 +36,28 @@ class User(Thread):
     
 
     def perform_transactions(self):
+        if self.throughput:
+            self.addToThroughPutList()
+        else:
+            self.addToLatencyList()
+
+    def addToThroughPutList(self):
+        elapsed = 0
+        nTrnasactions = 0
+        while elapsed < 10:
+            randInt = random.randint(0, self.size)
+            start = time.time()
+            r = self.transfer(randInt, self.amount)
+            end = time.time()
+            if r["result"]:
+                # print("Response ", r, "Recipient ", randInt, "Thread name ", self.name)
+                nTrnasactions += 1
+            # else:
+            #     print(":(((", r, "Thread name ", self.name)
+            elapsed += end - start
+        self.stats.append(nTrnasactions)
+
+    def addToLatencyList(self):
         success = 0
         total = 0
         for i in range(self.nTransactions):
@@ -45,8 +69,7 @@ class User(Thread):
                 total += r["latency"]
             # else:
             #     print(":(((", r, "Thread name ", self.name)
-        if success: self.latencyList.append(total/success)
-    
+        if success: self.stats.append(total/success)
 
     def transfer(self, recipient, amount):
         payload = {
