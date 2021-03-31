@@ -48,17 +48,16 @@ def gen_proofs_handler(es, timestamp, userid):
             # do the appropriate conversions so that we can serialize
             x['e'] = SigConversion.strlist2modint(x.get('e'))
             proof = SigConversion.convert_dict_strlist(signer.get_proofs(x))
-            hash_tmp = SHA256Hash().new(json.dumps(proof).encode())
-            hash_proof = Conversion.OS2IP(hash_tmp.digest())
+            # hash_tmp = SHA256Hash().new(json.dumps(proof).encode())
+            # hash_proof = Conversion.OS2IP(hash_tmp.digest())
             # print("here", flush=True)
-            pool.append(hash_proof)
+            pool.append(proof)
 
     # print(len(pool), flush=True)
     resp = {
         'timestamp': timestamp,
-        'hash_proofs': pool
-    }
-
+        'proofs': pool
+    } 
     return resp
 
 def gen_challenge_handler(userid: int, number: int, timestamp: int):

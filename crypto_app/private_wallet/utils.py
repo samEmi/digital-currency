@@ -53,8 +53,9 @@ def get_token(provider_id, pubkey, timestamp, expiration, value=1):
 def get_tokens_from_wallet(total_value, timestamp):
     #TODO: implement denominations
     # tokens = list(TokenModel.query.filter(TokenModel.expiration_ < timestamp).all())
-    tokens = TokenModel.query.all()
-    print(len(tokens), flush=True)
+    # print(len(tokens), flush=True)
+    tokens = list(TokenModel.query.all())
+    # print(len(tokens), flush=True)
     if len(tokens) < total_value: raise Exception("Insufficient funds")
     tokens = tokens[0:total_value]
     return tokens
@@ -69,10 +70,8 @@ def save_tokens(resp: dict, tokens: list, provider: str):
     :param policy: The policy ID for which the signatures were requested.
     :return: None
     """
-    # print(len(tokens), flush=True)
-    # print(len(resp.get('hash_proofs')), flush=True)
 
-    for proof_hash, token in zip(resp.get('hash_proofs'), tokens):
-        token.proof_hash = proof_hash
+    for proof, token in zip(resp.get('proofs'), tokens):
+        token.proof = proof
         token.save_to_db()
         print("saved", flush=True)        

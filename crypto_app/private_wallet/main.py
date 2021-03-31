@@ -13,6 +13,7 @@ from flask import current_app
 from .utils import *
 import dateutil.parser
 import sys
+import datetime
 
 main = Blueprint('main', __name__, template_folder='templates')
 
@@ -88,11 +89,12 @@ def withdraw_tokens_from_acc(headers):
     if res.status_code == 400:      
         flash(res.json().get('message'), 'withdraw_fail')
         return redirect(url_for('main.withdraw_tokens_from_acc'))
-    
+
+    expiration = dateutil.parser.parse(res.json().get('expiration')).timestamp()
     pubkey = SigConversion.convert_dict_modint(res.json().get('pub_key'))
     tokens = [get_token(provider_id=msb_id, pubkey=pubkey, 
                         timestamp=params['timestamp'], 
-                        expiration=res.json().get('expiration')) 
+                        expiration=expiration) 
                         for _ in range(params['total_value'])
             ]     
     
@@ -150,55 +152,59 @@ def send_tokens_to_merchant(headers):
         # get tokens from wallet database 
         # TODO: implement support for list of values 
         tokens = get_tokens_from_wallet(total_value, timestamp)
-        print("here", flush=True)
-
         params = {
             'total_value': total_value,
-            'claim_pubkey': tokens[0].pub_key,
-            # 'token_pubkeys': [token.pub_key for token in tokens],
+            'claim_pubkey': tokens[0].public_key,
             'timestamp': timestamp,
         }
 
         # request contract which will have to be signed with tokens private keys
-        print("here", flush=True)
         res = requests.get('http://{}/request_contract'.format(current_app.config[merchant_id]), params=params)
         nonce = res.json().get('nonce')
-        print("here", flush=True)
-        
+       
         # get the list of signature proofs
         blind_signatures, signatures = [], []
-        for token in tokens:
-            blind_signatures.append(token.generate_blind_signature(token.proof_hash))
-            signatures.append(token.sign(nonce))
+        for token in tokens:           
+            blind_signatures.append(token.generate_blind_signature(token.proof))
+            signatures.append(token.sign(nonce)[1])
         
-        proofs = {
+        
+        token_keys = {}
+        token_keys['token_pubkeys'] = []
+        for token in tokens:
+            token_keys['token_pubkeys'].extend(str(Conversion.OS2IP(token.public_key)))
+        # token_keys = {
+        #     # 'token_pubkeys': [str(Conversion.OS2IP(token.public_key)) for token in tokens]
+        #     'token_pubkeys': [token.public_key for token in tokens]
+        # }        
+        proofs = json.dumps({
             'nonce': nonce,
             'providers': [token.p_id for token in tokens],
             'blind_signatures': [json.dumps(SigConversion.convert_dict_strlist(x)) for x in blind_signatures],
             'signatures': signatures,
-        }
+        })
+        res = requests.post('http://{}/send_tokens'.format(current_app.config[merchant_id]), json=proofs, params=token_keys)            
         
-        # send tokens to merchant for validation
-        res = requests.post('http://{}/send_tokens'.format(merchant_id), json=proofs)
-
-        # handle error codes
-        if res.status_code == 400:
-            flash("Invalid input", 'send_fail')
-            return render_template('withdraw_tokens.html')
-
-        if res.status_code == 400:
-            flash("Invalid input", 'send_fail')
-            return render_template('withdraw_tokens.html')
-
         # save payment information
-        if res.status == 200:
+        if res.status_code == 200:
+            print("200", flush=True)
             contract = Contract(y=nonce, value = total_value, claim_keypair=tokens[0].key_pair, 
                                 timestamp=params['timestamp'], payed=True, receiver=merchant_id,
                                 signature=res.get('signature'), pubkey=res.get('pubkey'))
+            print("here", flush=True)
             contract.save_to_db()
+            print("here", flush=True)
+            for token in tokens: TokenModel.query.filter(TokenModel.id_ == token.id).delete()
+            print("here", flush=True)
+            balance = len(TokenModel.query.all())
             flash("Payment completed successfully", 'send_success')
-            #TODO: remove tokens from db            
-
+            flash(f"Remaining balance: {balance}", 'send_success')
+            return render_template('withdraw_tokens.html')
+        else:
+            #why is the flash not working?
+            flash(res.loads.get('message'), 'send_fail')
+            return render_template('withdraw_tokens.html')
+                    
     except Exception as e:
         flash(str(e), 'send_fail')
         return render_template('send_tokens.html')

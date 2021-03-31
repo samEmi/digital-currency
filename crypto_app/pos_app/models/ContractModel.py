@@ -34,6 +34,14 @@ class Contract(db.Model):
         self.payed_ = False
 
     @property
+    def total_value(self):
+        return self.total_value_
+
+    @total_value.setter
+    def total_value(self, value:int):
+        self.total_value_ = value
+
+    @property
     def payed(self):
         return self.payed_
 
@@ -60,6 +68,7 @@ class Contract(db.Model):
     def verify_signature(self, signatures: list, token_pubkeys):
         for signature, token_pubkey in zip(signatures, token_pubkeys):
             # Convert back to bytes
+            token_pubkey = Conversion.IP2OS(int(token_pubkey))
             sig = Conversion.IP2OS(signature)
 
             # Verifier setup
