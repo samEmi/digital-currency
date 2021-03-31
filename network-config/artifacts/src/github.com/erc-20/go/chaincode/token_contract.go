@@ -28,6 +28,10 @@ type event struct {
 	Value int    `json:"value"`
 }
 
+type spentToken struct {
+	Key   string `json:"key"`
+}
+
 // Mint creates new tokens and adds them to minter's account balance
 // This function triggers a Transfer event
 func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, amount int) error {
@@ -220,6 +224,34 @@ func (s *SmartContract) Transfer(ctx contractapi.TransactionContextInterface, re
 	return nil
 }
 
+
+func (s *SmartContract) AddSpentToken(ctx contractapi.TransactionContextInterface, key string) error {
+	token := spentToken{
+		Key:   key,
+	}
+
+	tokenAsBytes, _ := json.Marshal(token)
+	err := ctx.GetStub().PutState("DoubleSpend"+ key, tokenAsBytes)
+	if err != nil {
+		return fmt.Errorf("Failed to put to world state. %s", err.Error())
+	}
+	return nil
+}
+
+func (s *SmartContract) FindDoubleSpend(ctx contractapi.TransactionContextInterface, key string) (bool, error) {
+	tokenAsBytes, err := ctx.GetStub().GetState(key)
+
+	if err != nil {
+		return false, fmt.Errorf("Failed to read from world state. %s", err.Error())
+	}
+
+	if tokenAsBytes == nil {
+		return false, nil
+	}
+
+	return true, nil
+}
+
 // BalanceOf returns the balance of the given account
 func (s *SmartContract) BalanceOf(ctx contractapi.TransactionContextInterface, account string) (int, error) {
 	balanceBytes, err := ctx.GetStub().GetState(account)
@@ -256,6 +288,9 @@ func (s *SmartContract) ClientAccountBalance(ctx contractapi.TransactionContextI
 
 	return balance, nil
 }
+
+
+
 
 // ClientAccountID returns the id of the requesting client's account
 // In this implementation, the client account ID is the clientId itself
