@@ -2,10 +2,6 @@ from user import User, addUser
 import matplotlib.pyplot as plt
 import time
 
-
-# Constants for the number of transactions in 5 seconds against network size graph
-
-
 # Gets values for the latency against network size graph
 def latency_against_size(runs, ):
     avg_latencies = []
@@ -51,7 +47,7 @@ def get_avg_stat(size, transactions=0, throughput=False):
                         nTransactions=transactions, stats=stats,
                         throughput=throughput)
             user.start()
-            time.sleep(3)
+            # time.sleep(3)
             userList.append(user)
         else:
             print(response)
