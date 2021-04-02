@@ -10,6 +10,11 @@ from flask import current_app, flash, jsonify
 from flask_jwt_extended import current_user
 from flask_jwt_extended import create_access_token, create_refresh_token
 from datetime import timedelta
+import sys
+from Crypto.Hash import SHA256
+from Crypto.PublicKey import ECC
+from Crypto.Signature import DSS
+from charm.toolbox.conversion import Conversion
 
 def validate_account(account_id, account_pin):
     user = AccountModel.query.filter_by(account_id=account_id).first()
@@ -88,5 +93,29 @@ def gen_challenge_handler(userid: int, number: int, timestamp: int):
  
     return resp
 
-def verify_blind_signature():
-    pass
+def verify_signature(signatures, token_pubkeys, nonce):
+    for signature, token_pubkey in zip(signatures, token_pubkeys):
+        # Convert back to bytes
+        print("fuck", flush=True)
+        token_pubkey = Conversion.IP2OS(int(token_pubkey))
+        sig = Conversion.IP2OS(signature)
+
+        # Verifier setup
+        ecc = ECC.import_key(token_pubkey)
+        verifier = DSS.new(ecc, 'fips-186-3')
+        new_hash = SHA256.new(bytes.fromhex(nonce))
+
+        try:
+            verifier.verify(new_hash, sig)
+            return True
+        except Exception as e:
+            print(str(e), file=sys.stderr)
+            return False
+
+def verify_blind_signature(blind_signatures, providers, token_pubkeys):
+    for blind_signature, provider, token_pubkey in zip(blind_signatures, providers, token_pubkeys):
+        sig = SigConversion.convert_dict_modint(json.loads(blind_signature))
+        provider_pubk = get_provider_pubkey(provider)
+        verifier = BlindSignatureVerifier(provider_pubk)
+        message = Conversion.OS2IP(token_pubkey)
+        if verifier.verify(sig, message) == False: return False

@@ -53,7 +53,7 @@ def key_setup():
             'message': "Bad Request: Required parameters are not set"
         })
         return resp, 400
-
+ 
     try:
         access = validate_account(account_id, account_pin)
         sigvar = gen_challenge_handler(access['userid'], number, timestamp)
@@ -99,34 +99,37 @@ def withdraw_tokens():
             'message': str(e)
         })
         return resp, 400
-    
-
-
-@main.route('/validate_tokens', methods=['POST'])
-def validate_tokens():
-    data = json.loads(request.get_json())
-    blind_signatures = data['blind_signatures']
-    signers = data['signers']
-    messages = data['messages']
-    
-    # verify each blind_signature
-    for blind_signature, signer, message in zip(blind_signatures, signer, messages):
-        if verify_blind_signature(blind_signature, signer, message) == False:
-            resp = jsonify({
-            'message': "Bad Request: At least on signature is not valid'"
-            })
-        return resp, 400
-    
-    return resp, 200
 
 #! connect to ledger
 @main.route('/receive_tokens_into_account', methods=['POST'])
 def receive_tokens_into_account():
     data = json.loads(request.get_json())
-    signatures = data['signatures']
-    blind_signatures = data['blind_signatures']
-    signers = data['signers']
-    messages = data['messages']
-    pass
+    token_pubkeys = request.args.get('token_pubkeys')
+    total_value = request.args.get('total_value')
+    signers = data.get('signers')
+    nonce = data.get('nonce')
+
+    print(f"Type: {type(token_pubkeys)}", flush=True)
+    
+    # validate signatures
+    signatures = data.get('signatures')
+    print(f"Sigs: {len(signatures)}", flush=True)
+    if signatures is None or len(signatures) != int(total_value) or \
+    verify_signature(signatures, token_pubkeys, nonce) is False:
+        return jsonify({'message': 'Invalid Signature'}), 400
+
+    print("here1", flush=True)
+    
+    blind_signatures = data.get('blind_signatures')
+    if blind_signatures is None or len(blind_signatures) != total_value or verify_blind_signature(signatures, signers, token_pubkeys) == False:
+        return jsonify({'message': 'Invalid Signature'}), 400
+
+    # check against double-spending
+    # invoke mint chaincode function
+    return jsonify({'message': 'Payment completed successfully'}), 201
+    
+    
+   
+    
 
 

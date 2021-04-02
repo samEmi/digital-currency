@@ -35,49 +35,41 @@ def request_contract():
 def send_tokens():
     data = json.loads(request.get_json())
     nonce = data.get('nonce')
-    token_pubkeys = list(request.args.get('token_pubkeys'))
-    print(f'Tokens: {len(token_pubkeys)}', flush=True)
+    # print(f'Tokens: {len(token_pubkeys)}', flush=True)
    
     contract = Contract.find(nonce)
     if contract == None: return jsonify({'message': 'No corresponding contract'}), 500
-
-    # check if the sender owns the sent tokens
-    signatures = data.get('signatures')
-    print(f'Sigs: {len(signatures)}', flush=True)
-    if signatures is None or len(signatures) != contract.total_value \
-    or contract.verify_signature(signatures, token_pubkeys) == False: 
-        return jsonify({'message': 'Invalid Signature'}), 400
+ 
+    # # check if the sender owns the sent tokens
+    # signatures = data.get('signatures')
+    # print(f'Sigs: {len(signatures)}', flush=True)
+    # if signatures is None or len(signatures) != contract.total_value \
+    # or contract.verify_signature(signatures, token_pubkeys) == False: 
+    #     return jsonify({'message': 'Invalid Signature'}), 400
     
     # verify signature from msb
-    blind_signatures = data.get('blind_signatures')
-    if blind_signatures is None or len(blind_signatures) != contract.total_value \
-    or contract.verify_blind_signature(blind_signatures, token_pubkeys) == False: 
-        jsonify({'message': 'Blind signature failed to verify'}), 400
+    # blind_signatures = data.get('blind_signatures')
+    # if blind_signatures is None or len(blind_signatures) != contract.total_value \
+    # or contract.verify_blind_signature(blind_signatures, token_pubkeys) == False: 
+    #     jsonify({'message': 'Blind signature failed to verify'}), 400
 
-    print("good3", flush=True)
 
     # connect to msb which will validate tokens against database of spent tokens
-    
     params = {
         'account_id': current_app.config['account_id'],
-        'account_pass': current_app.config['account_pass'],
+        'account_pass': current_app.config['account_pin'],
+        'total_value': contract.total_value,
+        'token_pubkeys': request.args.get('token_pubkeys')
     }
-    #TODO: remove hardcoded msb_id
+    
     msb_id = current_app.config['msb1']
     res = requests.post('http://{}/receive_tokens_into_account'.format(msb_id), json=json.dumps(data), params=params)
 
     if res.status_code == 400:
         resp = jsonify({
-            'message': "Bad Request: Couldn't publish transaction to the ledger due to invalid credentials"
+            'message': res.json().get('message')
         })
         return resp, 400
-
-    if res.status_code == 409:
-        resp = jsonify({
-            'message': "Conflict: Couldn't publish transaction to the ledger due to double-spending attempt"
-        })
-        return resp, 409
-    
     
     contract.payed = True
     resp = {

@@ -74,6 +74,7 @@ def withdraw_tokens_from_acc(headers):
     #token_values = split_amt_into_denominations()
     #num_tokens = len(token_values)
 
+
     params = {
         'account_id': str(request.form.get('account_id')),
         'account_pin': str(request.form.get('account_pin')),
@@ -96,7 +97,7 @@ def withdraw_tokens_from_acc(headers):
                         timestamp=params['timestamp'], 
                         expiration=expiration) 
                         for _ in range(params['total_value'])
-            ]     
+            ]      
     
     try:
         # generates the challenge response for each token
@@ -147,7 +148,7 @@ def send_tokens_to_merchant(headers):
     merchant_id = str(request.form.get('merchant_id'))
     total_value = int(request.form.get('total_value'))
     timestamp = int(dateutil.parser.parse(request.form.get('time')).timestamp())
-
+ 
     try:
         # get tokens from wallet database 
         # TODO: implement support for list of values 
@@ -157,11 +158,12 @@ def send_tokens_to_merchant(headers):
             'claim_pubkey': tokens[0].public_key,
             'timestamp': timestamp,
         }
+        
 
         # request contract which will have to be signed with tokens private keys
         res = requests.get('http://{}/request_contract'.format(current_app.config[merchant_id]), params=params)
         nonce = res.json().get('nonce')
-       
+        
         # get the list of signature proofs
         blind_signatures, signatures = [], []
         for token in tokens:           
@@ -173,10 +175,9 @@ def send_tokens_to_merchant(headers):
         token_keys['token_pubkeys'] = []
         for token in tokens:
             token_keys['token_pubkeys'].extend(str(Conversion.OS2IP(token.public_key)))
-        # token_keys = {
-        #     # 'token_pubkeys': [str(Conversion.OS2IP(token.public_key)) for token in tokens]
-        #     'token_pubkeys': [token.public_key for token in tokens]
-        # }        
+            #token_keys['token_pubkeys'].extend(token.public_key)
+        print(token_keys['token_pubkeys'][0], flush=True)
+               
         proofs = json.dumps({
             'nonce': nonce,
             'providers': [token.p_id for token in tokens],
@@ -202,8 +203,8 @@ def send_tokens_to_merchant(headers):
             return render_template('withdraw_tokens.html')
         else:
             #why is the flash not working?
-            flash(res.loads.get('message'), 'send_fail')
-            return render_template('withdraw_tokens.html')
+            flash(res.json().get('message'), 'send_fail')
+            return render_template('send_tokens.html')
                     
     except Exception as e:
         flash(str(e), 'send_fail')

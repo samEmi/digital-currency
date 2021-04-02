@@ -22,7 +22,7 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
     # msb host config
-    app.config['msb1'] = 'msb1:6000'
+    app.config['msb1'] = '127.0.0.1:6000'
     app.config['msb2'] = 'msb2:5000'
     app.config['msb3'] = 'msb3:5000'
     app.config['msb4'] = 'msb4:5000'

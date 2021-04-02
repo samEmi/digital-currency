@@ -7,7 +7,7 @@ from charm.toolbox.conversion import Conversion
 from sqlalchemy import JSON
 from crypto_utils.conversions import SigConversion
 from crypto_utils.signatures import UserBlindSignature
-from .. import db
+from .. import db 
 
 
 class TokenModel(db.Model):

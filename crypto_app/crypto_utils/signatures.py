@@ -1,6 +1,7 @@
 """
 :Blind Signature Scheme
 
+
 | From: "M. Abe A Secure Three-move Blind Signature Scheme for Polynomially
 | 	Many Signatures"
 | Published in: EUROCRYPT 2001
@@ -55,10 +56,11 @@ def mulinv(a, b):
     return x % b
 
 
+
 class BlindSigner:
     """
     Should not be subclassed. Decode only works on the two currently defined subclasses.
-    """
+    """ 
     def __eq__(self, other):
         s_dict = {**self.__dict__}
         o_dict = {**other.__dict__}
@@ -127,7 +129,7 @@ class UserBlindSignature(BlindSigner):
             self.group.setparam(p=self.p, q=self.q)
             self.db = input_.get('db')
             if self.db is None:
-                self.db = {}
+                self.db = {} 
 
     def __store__(self, *args):
         for i in args:
@@ -259,7 +261,7 @@ class SignerBlindSignature(BlindSigner):
 
     def get_challenge(self):
         rnd = randomBits(80)
-
+ 
         msg = integer(Conversion.OS2IP(SHA1(Conversion.IP2OS(rnd))))
 
         z1 = ((msg ** ((self.p - 1) / self.q)) % self.p)

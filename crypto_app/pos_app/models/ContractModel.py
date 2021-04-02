@@ -65,7 +65,7 @@ class Contract(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    def verify_signature(self, signatures: list, token_pubkeys):
+    def verify_signature(self, signatures: list, token_pubkeys: list):
         for signature, token_pubkey in zip(signatures, token_pubkeys):
             # Convert back to bytes
             token_pubkey = Conversion.IP2OS(int(token_pubkey))
