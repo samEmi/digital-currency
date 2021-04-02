@@ -89,7 +89,7 @@ class TokenModel(db.Model):
         :return: (bytes)
         """
         key = self.key_pair
-        return key.public_key().export_key(format='DER')
+        return key.public_key().export_key(format='PEM')
 
     @property
     def interval_timestamp(self) -> int:

@@ -174,8 +174,8 @@ def send_tokens_to_merchant(headers):
         token_keys = {}
         token_keys['token_pubkeys'] = []
         for token in tokens:
-            token_keys['token_pubkeys'].extend(str(Conversion.OS2IP(token.public_key)))
-            #token_keys['token_pubkeys'].extend(token.public_key)
+            # token_keys['token_pubkeys'].extend(str(Conversion.OS2IP(token.public_key)))
+            token_keys['token_pubkeys'].extend(token.public_key)
         print(token_keys['token_pubkeys'][0], flush=True)
                
         proofs = json.dumps({

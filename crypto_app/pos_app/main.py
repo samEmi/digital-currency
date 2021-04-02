@@ -73,7 +73,7 @@ def send_tokens():
     
     contract.payed = True
     resp = {
-        'confirmation_signature': get_merchant_signature(nonce)
+        'confirmation_signature': ""#get_merchant_signature(nonce)
     }
     
     contract.save()

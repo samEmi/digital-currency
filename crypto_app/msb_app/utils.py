@@ -96,8 +96,8 @@ def gen_challenge_handler(userid: int, number: int, timestamp: int):
 def verify_signature(signatures, token_pubkeys, nonce):
     for signature, token_pubkey in zip(signatures, token_pubkeys):
         # Convert back to bytes
-        print("fuck", flush=True)
-        token_pubkey = Conversion.IP2OS(int(token_pubkey))
+        # print("fuck", flush=True)
+        # token_pubkey = Conversion.IP2OS(int(token_pubkey))
         sig = Conversion.IP2OS(signature)
 
         # Verifier setup
