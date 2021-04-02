@@ -6,7 +6,7 @@ random.seed(10)
 rootUrl = "http://localhost:4000"
 
 
-class db(Thread):
+class db:
     def __init__(self, address):
           super().__init__()
           self.address = address

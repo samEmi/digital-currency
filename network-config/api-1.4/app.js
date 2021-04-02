@@ -344,9 +344,18 @@ app.get('/channels/:channelName/chaincodes/:chaincodeName', async function (req,
 	args = args.replace(/'/g, '"');
 	args = JSON.parse(args);
 	logger.debug(args);
-
+	const start = Date.now();
 	let message = await query.queryChaincode(peer, channelName, chaincodeName, args, fcn, req.username, req.orgname);
-	res.send(message);
+	const latency = Date.now() - start;
+	const response_payload = {
+			result: message,
+			latency: latency,
+			error: null,
+			errorData: null
+		}
+	res.send(response_payload);
+	//
+	// res.send(message);
 });
 
 //  Query Get Block by BlockNumber
