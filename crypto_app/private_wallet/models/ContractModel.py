@@ -23,8 +23,8 @@ class Contract(db.Model):
 
 
     def __init__(self, y: str, value: int, claim_keypair: ECC, timestamp, payed: 'boolean', receiver: str, signature: str, pubkey: bytes):
-        self.y = y
-        self.value = value
+        self.y_ = y
+        self.value_ = value
         self.claim_keypair_ = claim_keypair
         self.timestamp = timestamp
         self.payed = payed

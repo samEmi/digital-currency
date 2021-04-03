@@ -30,7 +30,7 @@ def create_app():
     
     # database init info
     app.config['SECRET_KEY'] = '9OLWxND4o83j4K4iuopO'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///user.sqlite'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///msb_db.sqlite'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
     app.config['msb1'] = 'msb1:5000'

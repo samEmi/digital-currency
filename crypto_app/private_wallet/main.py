@@ -14,7 +14,8 @@ from .utils import *
 import dateutil.parser
 import sys
 import datetime
-from Crypto.PublicKey import ECC 
+from Crypto.PublicKey import ECC
+from . import db 
  
 main = Blueprint('main', __name__, template_folder='templates')
 
@@ -165,41 +166,40 @@ def send_tokens_to_merchant(headers):
         nonce = res.json().get('nonce')
         
         # get the list of signature proofs
-        blind_signatures, signatures = [], []
+        blind_signatures, signatures = list(), list()
         for token in tokens:           
             blind_signatures.append(token.generate_blind_signature(token.proof))
             signatures.append(token.sign(nonce)[1])
-        
-        
-        token_keys = list()
-        for token in tokens: token_keys.append(str(Conversion.OS2IP(token.public_key)))  
                
         proofs = json.dumps({
             'nonce': nonce,
             'providers': [token.p_id for token in tokens],
             'blind_signatures': [json.dumps(SigConversion.convert_dict_strlist(x)) for x in blind_signatures],
             'signatures': signatures,
-            'token_pubkeys': token_keys
+            'token_pubkeys': [str(Conversion.OS2IP(token.public_key)) for token in tokens]
         })
         res = requests.post('http://{}/send_tokens'.format(current_app.config[merchant_id]), json=proofs)            
         
         # save payment information
-        if res.status_code == 200:
-            print("200", flush=True)
-            contract = Contract(y=nonce, value = total_value, claim_keypair=tokens[0].key_pair, 
+        if res.status_code == 201:
+            res = res.json()
+            contract = Contract(y=nonce, value=total_value, claim_keypair=None, 
                                 timestamp=params['timestamp'], payed=True, receiver=merchant_id,
                                 signature=res.get('signature'), pubkey=res.get('pubkey'))
-            print("here", flush=True)
+            balance = len(TokenModel.query.all())
+            print(f"Remaining balance: {balance}", flush=True)
+            print(f"Total value: {total_value}", flush=True)
             contract.save_to_db()
-            print("here", flush=True)
-            for token in tokens: TokenModel.query.filter(TokenModel.id_ == token.id).delete()
-            print("here", flush=True)
+            for token in tokens: 
+                token = TokenModel.query.get(token.id)
+                db.session.delete(token)
+                db.session.commit()
+
             balance = len(TokenModel.query.all())
             flash("Payment completed successfully", 'send_success')
-            flash(f"Remaining balance: {balance}", 'send_success')
-            return render_template('withdraw_tokens.html')
+            print(f"Remaining balance: {balance}", flush=True)
+            return render_template('send_tokens.html')
         else:
-            #why is the flash not working?
             flash(res.json().get('message'), 'send_fail')
             return render_template('send_tokens.html')
                     

@@ -8,6 +8,8 @@ from dateutil.relativedelta import *
 from dateutil.easter import *
 from dateutil.rrule import *
 from datetime import *
+from Crypto.PublicKey import ECC 
+from Crypto.Signature import DSS
 
 today = date.today()
 rdelta = relativedelta(easter(2021), today)
@@ -32,10 +34,16 @@ def create_app():
     app.config['account_id'] = 'merchant'
     app.config['account_pin'] = '1234'
 
-    # initialise public key
-    signer = SignerBlindSignature(IntegerGroupQ())
+    # initialise key
+    key = ECC.generate(curve='P-256').export_key(format='DER')
+    key = ECC.import_key(encoded=key)
+    # initialise signer
+    signer = DSS.new(key, 'fips-186-3')
     app.config['signer'] = signer
-    app.config['pubkey'] = SigConversion.convert_dict_strlist(signer.get_public_key())
+    # initialise pubkey
+    pubkey = key.public_key().export_key(format='DER')
+    pubkey = ECC.import_key(encoded=pubkey)
+    app.config['pubkey'] = pubkey
     app.config['key_expiration'] = today + rdelta
 
     db.init_app(app)

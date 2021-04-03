@@ -3,7 +3,7 @@ from Crypto import Random as rd
 from .models.ContractModel import Contract
 from flask import current_app
 from charm.toolbox.conversion import Conversion
-
+from Crypto.Hash import SHA256
 
 class Nonce:
     def __init__(self, id: int, n=None):
@@ -45,4 +45,5 @@ def get_provider_pubkey():
 
 def get_merchant_signature(nonce: str):
     signer = current_app.config['signer']
-    return Conversion.OS2IP(signer.sign(nonce))
+    message = SHA256.new(bytes.fromhex(nonce))
+    return Conversion.OS2IP(signer.sign(message))

@@ -104,20 +104,25 @@ def withdraw_tokens():
 @main.route('/receive_tokens_into_account', methods=['POST'])
 def receive_tokens_into_account():
     data = json.loads(request.get_json())
+    
     token_pubkeys = data.get('token_pubkeys')
+    token_pubkeys = [Conversion.IP2OS(int(token_pubkey)) for token_pubkey in token_pubkeys]
+    
     total_value = request.args.get('total_value')
-    signers = data.get('signers')
+    providers = data.get('providers')
     nonce = data.get('nonce')
     
-    # validate signatures
+    # validate ownership signatures
     signatures = data.get('signatures')
     if signatures is None or len(signatures) != int(total_value) or \
     verify_signature(signatures, token_pubkeys, nonce) is False:
         return jsonify({'message': 'Invalid Signature'}), 400
     
+    # validate unblinded signature
     blind_signatures = data.get('blind_signatures')
-    if blind_signatures is None or len(blind_signatures) != total_value or verify_blind_signature(signatures, signers, token_pubkeys) == False:
-        return jsonify({'message': 'Invalid Signature'}), 400
+    if blind_signatures is None or len(blind_signatures) != int(total_value) or \
+    verify_blind_signature(blind_signatures, providers, token_pubkeys) is False:
+        return jsonify({'message': 'Invalid Blind Signature'}), 400
 
     # check against double-spending
     # invoke mint chaincode function

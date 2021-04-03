@@ -6,7 +6,7 @@ from charm.toolbox.conversion import Conversion
 from crypto_utils.conversions import SigConversion
 from crypto_utils.signatures import UserBlindSignature
 from Crypto.Hash.SHA256 import SHA256Hash
-
+ 
 def handle_challenges(pubkey, tokens: TokenModel, resp: dict, timestamp):
     """
     Utility function that takes care of type conversions and ultimately calls the signing function
@@ -73,5 +73,4 @@ def save_tokens(resp: dict, tokens: list, provider: str):
 
     for proof, token in zip(resp.get('proofs'), tokens):
         token.proof = proof
-        token.save_to_db()
-        print("saved", flush=True)        
+        token.save_to_db()       

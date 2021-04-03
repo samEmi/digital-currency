@@ -1,4 +1,4 @@
-from crypto_utils.signatures import SignerBlindSignature
+from crypto_utils.signatures import SignerBlindSignature, BlindSignatureVerifier
 from crypto_utils.conversions import SigConversion
 from Crypto.Hash.SHA256 import SHA256Hash
 from charm.toolbox.conversion import Conversion
@@ -95,7 +95,6 @@ def gen_challenge_handler(userid: int, number: int, timestamp: int):
 
 def verify_signature(signatures, token_pubkeys, nonce):
     for signature, token_pubkey in zip(signatures, token_pubkeys):       
-        token_pubkey = Conversion.IP2OS(int(token_pubkey))
         sig = Conversion.IP2OS(signature)
 
         ecc = ECC.import_key(encoded=token_pubkey)
@@ -106,8 +105,14 @@ def verify_signature(signatures, token_pubkeys, nonce):
             verifier.verify(new_hash, sig)
         except Exception as e:
             print(str(e), file=sys.stderr)
-            return False, e
-    return True, None
+            return False
+    return True
+
+#TODO: post keys on the ledger to evaluate the system more reliably
+def get_provider_pubkey(provider: str):
+    signer = current_app.config['signer']
+    # return SigConversion.convert_dict_modint(current_app.config['pubkey'])
+    return signer.get_public_key()
 
 def verify_blind_signature(blind_signatures, providers, token_pubkeys):
     for blind_signature, provider, token_pubkey in zip(blind_signatures, providers, token_pubkeys):
@@ -115,4 +120,10 @@ def verify_blind_signature(blind_signatures, providers, token_pubkeys):
         provider_pubk = get_provider_pubkey(provider)
         verifier = BlindSignatureVerifier(provider_pubk)
         message = Conversion.OS2IP(token_pubkey)
-        if verifier.verify(sig, message) == False: return False
+        try:
+            if verifier.verify(sig, message) is False: return False
+        except Exception as e:
+            print(str(e), file=sys.stderr)
+            return False
+    
+    return True
