@@ -104,21 +104,16 @@ def withdraw_tokens():
 @main.route('/receive_tokens_into_account', methods=['POST'])
 def receive_tokens_into_account():
     data = json.loads(request.get_json())
-    token_pubkeys = request.args.get('token_pubkeys')
+    token_pubkeys = data.get('token_pubkeys')
     total_value = request.args.get('total_value')
     signers = data.get('signers')
     nonce = data.get('nonce')
-
-    print(f"Type: {type(token_pubkeys)}", flush=True)
     
     # validate signatures
     signatures = data.get('signatures')
-    print(f"Sigs: {len(signatures)}", flush=True)
     if signatures is None or len(signatures) != int(total_value) or \
     verify_signature(signatures, token_pubkeys, nonce) is False:
         return jsonify({'message': 'Invalid Signature'}), 400
-
-    print("here1", flush=True)
     
     blind_signatures = data.get('blind_signatures')
     if blind_signatures is None or len(blind_signatures) != total_value or verify_blind_signature(signatures, signers, token_pubkeys) == False:

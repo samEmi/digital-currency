@@ -14,7 +14,8 @@ from .utils import *
 import dateutil.parser
 import sys
 import datetime
-
+from Crypto.PublicKey import ECC 
+ 
 main = Blueprint('main', __name__, template_folder='templates')
 
 def token_required(func):
@@ -150,7 +151,6 @@ def send_tokens_to_merchant(headers):
     timestamp = int(dateutil.parser.parse(request.form.get('time')).timestamp())
  
     try:
-        # get tokens from wallet database 
         # TODO: implement support for list of values 
         tokens = get_tokens_from_wallet(total_value, timestamp)
         params = {
@@ -171,20 +171,17 @@ def send_tokens_to_merchant(headers):
             signatures.append(token.sign(nonce)[1])
         
         
-        token_keys = {}
-        token_keys['token_pubkeys'] = []
-        for token in tokens:
-            # token_keys['token_pubkeys'].extend(str(Conversion.OS2IP(token.public_key)))
-            token_keys['token_pubkeys'].extend(token.public_key)
-        print(token_keys['token_pubkeys'][0], flush=True)
+        token_keys = list()
+        for token in tokens: token_keys.append(str(Conversion.OS2IP(token.public_key)))  
                
         proofs = json.dumps({
             'nonce': nonce,
             'providers': [token.p_id for token in tokens],
             'blind_signatures': [json.dumps(SigConversion.convert_dict_strlist(x)) for x in blind_signatures],
             'signatures': signatures,
+            'token_pubkeys': token_keys
         })
-        res = requests.post('http://{}/send_tokens'.format(current_app.config[merchant_id]), json=proofs, params=token_keys)            
+        res = requests.post('http://{}/send_tokens'.format(current_app.config[merchant_id]), json=proofs)            
         
         # save payment information
         if res.status_code == 200:

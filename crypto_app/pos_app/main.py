@@ -59,7 +59,6 @@ def send_tokens():
         'account_id': current_app.config['account_id'],
         'account_pass': current_app.config['account_pin'],
         'total_value': contract.total_value,
-        'token_pubkeys': request.args.get('token_pubkeys')
     }
     
     msb_id = current_app.config['msb1']

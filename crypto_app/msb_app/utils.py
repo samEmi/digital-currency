@@ -94,14 +94,12 @@ def gen_challenge_handler(userid: int, number: int, timestamp: int):
     return resp
 
 def verify_signature(signatures, token_pubkeys, nonce):
-    for signature, token_pubkey in zip(signatures, token_pubkeys):
-        # Convert back to bytes
-        # print("fuck", flush=True)
-        # token_pubkey = Conversion.IP2OS(int(token_pubkey))
+    for signature, token_pubkey in zip(signatures, token_pubkeys):       
+        token_pubkey = Conversion.IP2OS(int(token_pubkey))
         sig = Conversion.IP2OS(signature)
 
         # Verifier setup
-        ecc = ECC.import_key(token_pubkey)
+        ecc = ECC.import_key(encoded=token_pubkey)
         verifier = DSS.new(ecc, 'fips-186-3')
         new_hash = SHA256.new(bytes.fromhex(nonce))
 

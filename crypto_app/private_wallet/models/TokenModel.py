@@ -1,7 +1,7 @@
 from typing import Tuple
 import json
 from Crypto.Hash import SHA256
-from Crypto.PublicKey import ECC
+from Crypto.PublicKey import ECC 
 from Crypto.Signature import DSS
 from charm.toolbox.conversion import Conversion
 from sqlalchemy import JSON
@@ -89,7 +89,7 @@ class TokenModel(db.Model):
         :return: (bytes)
         """
         key = self.key_pair
-        return key.public_key().export_key(format='PEM')
+        return key.public_key().export_key(format='DER')
 
     @property
     def interval_timestamp(self) -> int:
