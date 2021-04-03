@@ -1,7 +1,6 @@
 from user import User, addUser
 from dsdb import db
 import matplotlib.pyplot as plt
-import time
 
 # Gets values for the latency against network size graph
 def latency_against_size(runs, ):
@@ -80,24 +79,27 @@ def plot_latency_size(avg_latencies, x, xLabel='Number of users', yLabel="Averag
     plt.show()
 
 if __name__ == '__main__':
-    spent_tokens = [2, 5, 10, 20, 50, 100, 200, 400, 800, 1000, 2000]
-    result = measure_dsdb(spent_tokens)
-    print(result)
     # Constants for the latency against network size graph
-    # nTransactions = 5
-    # networkSizes = [2, 10, 25, 50, 100, 200]
-    # avg_latencies = latency_against_size(10)
-    # plot_latency_size(avg_latencies, networkSizes)
+    nTransactions = 5
+    networkSizes = [2, 10, 25, 50, 100, 200]
+    avg_latencies = latency_against_size(10)
+    plot_latency_size(avg_latencies, networkSizes)
     # #----------------------------------------------------------------------------------------------------------
     #
     # # # Constants for the latency against numberOfTransactions per user graph
-    # network_size = 5
-    # transactions = [5, 10, 25, 50, 75, 100, 150, 200] # each value represents the number of transactions per user for an experiment
-    # avg_latencies = latency_against_transactions(10)
-    # plot_latency_size(avg_latencies, transactions, xLabel='Number of transactions per user', yLabel="Average Latency / ms"
-    #                   , title='Average Latency against Number of Users per transaction')
+    network_size = 5
+    transactions = [5, 10, 25, 50, 75, 100, 150, 200] # each value represents the number of transactions per user for an experiment
+    avg_latencies = latency_against_transactions(10)
+    plot_latency_size(avg_latencies, transactions, xLabel='Number of transactions per user', yLabel="Average Latency / ms"
+                      , title='Average Latency against Number of Users per transaction')
+
     # # #----------------------------------------------------------------------------------------------------------
-    # avg_transactions = transactions_against_size(1)
-    # plot_latency_size(avg_transactions, networkSizes, xLabel='Number of users', yLabel="avg number of transactions in 10 seconds", title='Throughput against number of users')
+    avg_transactions = transactions_against_size(1)
+    plot_latency_size(avg_transactions, networkSizes, xLabel='Number of users', yLabel="avg number of transactions in 10 seconds", title='Throughput against number of users')
+
+    # #------------------------------------------------------------------------------------------------------------
+    spent_tokens = [2, 5, 10, 20, 50, 100, 200, 400, 800, 1000, 2000]
+    result = measure_dsdb(spent_tokens)
+    print(result)
 
 
