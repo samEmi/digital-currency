@@ -16,15 +16,9 @@ def main():
     msg_hash = SHA256.new(bytes.fromhex(y))
     signer = DSS.new(key, 'fips-186-3')
     signature = signer.sign(msg_hash)
-    # signature = Conversion.OS2IP(signature)
-
-
-    # signature = Conversion.IP2OS(signature)
     pubkey = key.public_key().export_key(format='DER')
-    # pubkey = Conversion.OS2IP(pubkey)
-    # pubkey = Conversion.IP2OS(pubkey)
+   
     pubkey = ECC.import_key(encoded=pubkey)
-    
     verifier = DSS.new(pubkey, 'fips-186-3')
     new_hash = SHA256.new(bytes.fromhex(y))
 

@@ -98,17 +98,16 @@ def verify_signature(signatures, token_pubkeys, nonce):
         token_pubkey = Conversion.IP2OS(int(token_pubkey))
         sig = Conversion.IP2OS(signature)
 
-        # Verifier setup
         ecc = ECC.import_key(encoded=token_pubkey)
         verifier = DSS.new(ecc, 'fips-186-3')
         new_hash = SHA256.new(bytes.fromhex(nonce))
 
         try:
             verifier.verify(new_hash, sig)
-            return True
         except Exception as e:
             print(str(e), file=sys.stderr)
-            return False
+            return False, e
+    return True, None
 
 def verify_blind_signature(blind_signatures, providers, token_pubkeys):
     for blind_signature, provider, token_pubkey in zip(blind_signatures, providers, token_pubkeys):

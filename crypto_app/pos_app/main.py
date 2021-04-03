@@ -35,19 +35,17 @@ def request_contract():
 def send_tokens():
     data = json.loads(request.get_json())
     nonce = data.get('nonce')
-    # print(f'Tokens: {len(token_pubkeys)}', flush=True)
    
     contract = Contract.find(nonce)
     if contract == None: return jsonify({'message': 'No corresponding contract'}), 500
  
-    # # check if the sender owns the sent tokens
+    # Optional: verify signatures on merchant's side
     # signatures = data.get('signatures')
     # print(f'Sigs: {len(signatures)}', flush=True)
     # if signatures is None or len(signatures) != contract.total_value \
     # or contract.verify_signature(signatures, token_pubkeys) == False: 
     #     return jsonify({'message': 'Invalid Signature'}), 400
     
-    # verify signature from msb
     # blind_signatures = data.get('blind_signatures')
     # if blind_signatures is None or len(blind_signatures) != contract.total_value \
     # or contract.verify_blind_signature(blind_signatures, token_pubkeys) == False: 
@@ -57,7 +55,7 @@ def send_tokens():
     # connect to msb which will validate tokens against database of spent tokens
     params = {
         'account_id': current_app.config['account_id'],
-        'account_pass': current_app.config['account_pin'],
+        'account_pin': current_app.config['account_pin'],
         'total_value': contract.total_value,
     }
     
