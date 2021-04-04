@@ -1,6 +1,5 @@
 import requests
 import random
-from threading import Thread
 
 random.seed(10)
 rootUrl = "http://localhost:4000"
@@ -63,10 +62,3 @@ def get(url, headers=None):
         print(f"Get Request Error ", e)
         return response
     return response
-
-
-# if __name__ == '__main__':
-# user token required first.
-#     d = db("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MTcyNDE3MjYsInVzZXJuYW1lIjoidHJ1bXAiLCJvcmdOYW1lIjoiT3JnMSIsImlhdCI6MTYxNzIwNTcyNn0.BLuQfZhFDeHWAVZxN43bTeIqNaiCJVILYSK2n_kqjOs")
-#     temp = d.FindToken("1002")
-#     print(temp)
