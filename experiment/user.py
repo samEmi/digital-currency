@@ -7,7 +7,7 @@ random.seed(10)
 rootUrl = "http://localhost:4000"
 
 class User(Thread):
-    def __init__(self, address, init_value, size, amount, stats, nTransactions=0, throughput=False):
+    def __init__(self, address, init_value=None, size=None, amount=None, stats=None, nTransactions=0, throughput=False):
           super().__init__()
           self.address = address
           self.value = init_value
@@ -34,7 +34,7 @@ class User(Thread):
         }
         return self.helper(payload)
 
-    def removeAsset(self):
+    def removeAsset(self, amount: int):
         pass
     
 
