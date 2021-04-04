@@ -15,7 +15,7 @@ from Crypto.Hash import SHA256
 from Crypto.PublicKey import ECC
 from Crypto.Signature import DSS
 from charm.toolbox.conversion import Conversion
-
+ 
 def validate_account(account_id, account_pin):
     user = AccountModel.query.filter_by(account_id=account_id).first()
     

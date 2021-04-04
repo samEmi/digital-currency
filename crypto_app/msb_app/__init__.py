@@ -5,6 +5,7 @@ from crypto_utils.signatures import SignerBlindSignature
 from crypto_utils.conversions import SigConversion
 from charm.toolbox.integergroup import IntegerGroupQ
 import datetime
+# from flask_login import LoginManager
 from dateutil.relativedelta import *
 from dateutil.easter import *
 from datetime import date
@@ -40,8 +41,19 @@ def create_app():
     app.config['msb5'] = 'msb5:5000'
 
     # login_manager = LoginManager()
-    # login_manager.login_view = 'main.login'
+    # login_manager.login_view = 'auth.login'
     # login_manager.init_app(app)
+
+    # from cp.models.UserModel import UserModel
+
+    # @login_manager.user_loader
+    # def load_user(user_id):
+    #     # since the user_id is just the primary key of our user table, use it in the query for the user
+    #     return UserModel.query.get(int(user_id))
+
+    # @jwt.user_loader_callback_loader
+    # def user_loader_callback(identity):
+    #     return UserModel.query.get(identity)
 
     db.init_app(app)
     jwt.init_app(app)

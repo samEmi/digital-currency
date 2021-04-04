@@ -18,7 +18,7 @@ from Crypto.PublicKey import ECC
 from . import db 
  
 main = Blueprint('main', __name__, template_folder='templates')
-
+ 
 def token_required(func):
     """
     Helper wrapper that injects the access token that is needed for authentication into the protected methods.
@@ -84,7 +84,7 @@ def withdraw_tokens_from_acc(headers):
         'num_tokens': total_value,
         'timestamp': int(dateutil.parser.parse(request.form.get('time')).timestamp()),
     }
-
+ 
     # connect to msb_id which will try and generate the key model and signature challenge for each token
     res = requests.get("http://%s/key_setup" % current_app.config[msb_id], params=params) 
     

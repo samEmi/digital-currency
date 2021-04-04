@@ -9,9 +9,9 @@ from crypto_utils.conversions import SigConversion
 from .utils import *
 from flask import current_app
 import requests
-
+ 
 main = Blueprint('main', __name__, template_folder='templates')
-
+ 
 @main.route('/request_contract', methods=['GET'])
 def request_contract():
     '''Method called by merchant' backaned whenever a customer makes a request'''
@@ -51,7 +51,7 @@ def send_tokens():
     # or contract.verify_blind_signature(blind_signatures, token_pubkeys) == False: 
     #     jsonify({'message': 'Blind signature failed to verify'}), 400
 
-
+ 
     # connect to msb which will validate tokens against database of spent tokens
     params = {
         'account_id': current_app.config['account_id'],

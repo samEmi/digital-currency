@@ -1,14 +1,16 @@
 from flask import request, current_app, jsonify, flash, Blueprint, render_template
 from .utils import *
+from ....experiment.user import User
+from ....experiment.dsdb import db
 import json
 import requests
 from crypto_utils.signatures import SignerBlindSignature
 from crypto_utils.conversions import SigConversion
 from flask_jwt_extended import jwt_required
 import os
-
+ 
 main = Blueprint('main', __name__, template_folder='templates')
-
+ 
 @main.route('/')
 def index():
     app_name = os.getenv("APP_NAME")
@@ -92,7 +94,10 @@ def withdraw_tokens():
     try:
         res = gen_proofs_handler(es, timestamp, userid)
         resp = json.dumps(res)
-        # should connect to fabric here and call burn function on behalf of the user's account
+        # user = AccountModel.query.get(userid)
+        # fabric_user = User(token=user.token)
+        # #TODO: add proper amt once denominations are implemented
+        # fabric_user.removeAsset(value=len(es))
         return resp, 201
     except Exception as e:
         resp = jsonify({
@@ -104,10 +109,17 @@ def withdraw_tokens():
 @main.route('/receive_tokens_into_account', methods=['POST'])
 def receive_tokens_into_account():
     data = json.loads(request.get_json())
-    
     token_pubkeys = data.get('token_pubkeys')
-    token_pubkeys = [Conversion.IP2OS(int(token_pubkey)) for token_pubkey in token_pubkeys]
     
+    # check against double-spending
+    # dsdb = db()
+    # for token_pubkey in token_pubkeys:
+    #     if dsdb.FindToken(token_pubkey) is True:
+    #         return jsonify({'message': 'Double-spent attempt'}), 400
+    
+    # deserialise token pubkeys
+    token_pubkeys = [Conversion.IP2OS(int(token_pubkey)) for token_pubkey in token_pubkeys]
+
     total_value = request.args.get('total_value')
     providers = data.get('providers')
     nonce = data.get('nonce')
@@ -124,8 +136,11 @@ def receive_tokens_into_account():
     verify_blind_signature(blind_signatures, providers, token_pubkeys) is False:
         return jsonify({'message': 'Invalid Blind Signature'}), 400
 
-    # check against double-spending
     # invoke mint chaincode function
+    # user = AccountModel.query.filter_by(account_id=request.args.get('account_id')).first()
+    # #TODO: modify amount once denominations are implemented
+    # fabric_user = User(token=user.token, init_value=len(signatures))
+    # fabric_user.addAsset()
     return jsonify({'message': 'Payment completed successfully'}), 201
     
     
