@@ -1,4 +1,4 @@
-from user import User, addUser
+from user import User, addUser, addCryptoUser
 from dsdb import db
 import matplotlib.pyplot as plt
 
@@ -40,6 +40,7 @@ def get_avg_stat(size, transactions=0, throughput=False):
     stats = []
     userList = []
     for i in range(size):
+        #TODO: should probably move user creation outside evaluation bacause it might add significant load?
         response = addUser(i)
         if response and response["success"]:
             token = response["token"]
@@ -77,6 +78,15 @@ def plot_latency_size(avg_latencies, x, xLabel='Number of users', yLabel="Averag
     plt.ylabel(yLabel)
     plt.title(title)
     plt.show()
+
+#TODO: initialise a batch of users for each one of the msbs
+def addUsers(num_users: int):
+    for i in range(num_users):
+        addCryptoUser(str(i), str(i), 'msb1')
+    # TODO: in order to test the system with multiple msbs we need a db to store keys
+    # for i in range(num_users):
+    #     addCryptoUser(str(i), str(i), 'msb2')
+
 
 if __name__ == '__main__':
     # Constants for the latency against network size graph
