@@ -13,7 +13,7 @@ from flask_jwt_extended import JWTManager
 from charm.toolbox.ecgroup import ECGroup,ZR,G
 from charm.toolbox.eccurve import prime192v1
 
-
+ 
 today = datetime.datetime.now()
 # rdelta = relativedelta(easter(2021), today)
 rdelta = datetime.timedelta(hours=500)
@@ -26,18 +26,21 @@ jwt = JWTManager()
 def create_app():
     app = Flask(__name__, template_folder='templates')
     
-    # 1. initialise key setup for blind signature
+    # 1. key setup for blind signature
     signer = SignerBlindSignature(IntegerGroupQ())
     app.config['signer'] = signer
     app.config['pubkey'] = SigConversion.convert_dict_strlist(signer.get_public_key())
     app.config['key_expiration'] = today + rdelta
 
-    # # 2. initialise key setup for blind ring signature
+    # # 2. key setup for blind ring signature
     # group = ECGroup(prime192v1)
-    # # get the public EEC point from the ledger
+    # # get the ECC point from the ledger or hardcode it
+    # # P has to be public info, known by all members of the ring and the user
     # P = keydb.get('P')
-    # app.config['sk'] = group.random(ZR)
-    # app.config['pk'] = P ** app.config['sk']
+    # ring_pks = list()
+    # for i in range(ring_size):
+    #     ring_pks.append(keydb.FindKey(str(i)))
+    # app.config['signer'] = SignerBlindRing(prime192v1, P, ring_pks=ring_pks)
  
     # database init info
     app.config['SECRET_KEY'] = '9OLWxND4o83j4K4iuopO'
