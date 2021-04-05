@@ -24,10 +24,6 @@ class ColdWallet:
             privk = kg.generate_key()
             self.walletAddress = privk
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD:Wallet/Wallet.py
->>>>>>> 593afd7fe27ad13b0768079253cd7e2475f160b6
     def receive(self):
         # Do we need this function? Might only be useful when transaction is sent from another PW
         # since receiving transactions from account should be handled by request_tokens_from_account
@@ -58,12 +54,9 @@ class ColdWallet:
 
 
     def send(self, recipientAddress):
-<<<<<<< HEAD
-=======
-=======
+        pass
+
     def receive(self, token):
->>>>>>> 33074c55225847c67753cd02e906f30491845c52:Wallet.py
->>>>>>> 593afd7fe27ad13b0768079253cd7e2475f160b6
         kg = KeyGeneration.KeyGenerator()
         privk = kg.generate_key()
         pk = kg.private2public(privk)
