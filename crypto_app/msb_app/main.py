@@ -1,14 +1,17 @@
 from flask import request, current_app, jsonify, flash, Blueprint, render_template
 from .utils import *
+# from ....experiment.user import User, addUser
+# from ....experiment.dsdb import db
 import json
 import requests
 from crypto_utils.signatures import SignerBlindSignature
 from crypto_utils.conversions import SigConversion
 from flask_jwt_extended import jwt_required
 import os
-
+import time
+ 
 main = Blueprint('main', __name__, template_folder='templates')
-
+ 
 @main.route('/')
 def index():
     app_name = os.getenv("APP_NAME")
@@ -16,7 +19,7 @@ def index():
         app_name = "MSB Interface"
 
     return render_template('index.html', name=app_name)
-
+ 
 
 @main.route('/signup')
 def signup():
@@ -29,12 +32,15 @@ def signup_post():
 
     # if this returns a user, then the email already exists in database
     user = AccountModel.query.filter_by(account_id=account_id).first()
-
+    
     # if a user is found, we want to redirect back to signup page so user can try again
     if user:
         return jsonify({'message': 'User already exists'}), 401
 
     new_user = AccountModel(account_id=account_id, account_pin=account_pin)
+    # create corresponding fabric user
+    # fabric_token = addUser(str(account_id))['token']
+    # new_user.token = fabric_token
     new_user.save_to_db()
     return jsonify({'message': 'Created.' + account_id}), 201
 
@@ -92,7 +98,11 @@ def withdraw_tokens():
     try:
         res = gen_proofs_handler(es, timestamp, userid)
         resp = json.dumps(res)
-        # should connect to fabric here and call burn function on behalf of the user's account
+        # invoken 'burn' chaincode function using Fabric API
+        # user = AccountModel.query.get(userid)
+        # fabric_user = User(token=user.token)
+        # #TODO: add proper amt once denominations are implemented
+        # fabric_user.removeAsset(value=len(es))
         return resp, 201
     except Exception as e:
         resp = jsonify({
@@ -104,32 +114,40 @@ def withdraw_tokens():
 @main.route('/receive_tokens_into_account', methods=['POST'])
 def receive_tokens_into_account():
     data = json.loads(request.get_json())
-    
     token_pubkeys = data.get('token_pubkeys')
-    token_pubkeys = [Conversion.IP2OS(int(token_pubkey)) for token_pubkey in token_pubkeys]
+    # user = AccountModel.query.filter_by(account_id=request.args.get('account_id')).first()
+    # check against double-spending using Fabric API
+    # dsdb = db(user.token)
+    # for token_pubkey in token_pubkeys:
+    #     if dsdb.FindToken(token_pubkey) is True:
+    #         return jsonify({'message': 'Double-spent attempt'}), 400
     
+    # deserialise token pubkeys
+    token_pubkeys = [Conversion.IP2OS(int(token_pubkey)) for token_pubkey in token_pubkeys]
+
     total_value = request.args.get('total_value')
     providers = data.get('providers')
     nonce = data.get('nonce')
     
     # validate ownership signatures
     signatures = data.get('signatures')
+    verif1 = time.time()
+    
     if signatures is None or len(signatures) != int(total_value) or \
     verify_signature(signatures, token_pubkeys, nonce) is False:
         return jsonify({'message': 'Invalid Signature'}), 400
-    
+    print(f"Verify ownership sig: {time.time() - verif1}", flush=True)
+   
     # validate unblinded signature
     blind_signatures = data.get('blind_signatures')
+    verif2 = time.time()
     if blind_signatures is None or len(blind_signatures) != int(total_value) or \
     verify_blind_signature(blind_signatures, providers, token_pubkeys) is False:
         return jsonify({'message': 'Invalid Blind Signature'}), 400
-
-    # check against double-spending
-    # invoke mint chaincode function
+    print(f"Verify blind sig: {time.time() - verif2}", flush=True)
+    
+    # invoke mint chaincode function using Fabric API
+    # #TODO: modify amount once denominations are implemented
+    # fabric_user = User(token=user.token, init_value=len(signatures))
+    # fabric_user.addAsset()
     return jsonify({'message': 'Payment completed successfully'}), 201
-    
-    
-   
-    
-
-
