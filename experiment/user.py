@@ -39,7 +39,17 @@ class User(Thread):
         return self.helper(payload)
 
     def removeAsset(self, amount: int):
-        pass
+        payload = {
+            "fcn": "Burn",
+            "args": [str(amount)],
+            "peers": [
+                "peer0.msb1.example.com"
+                # "peer0.msb2.example.com"
+            ],
+            "chaincodeName": "token-erc-20",
+            "channelName": "mychannel"
+        }
+        return self.helper(payload)
     
 
     def perform_transactions(self):
