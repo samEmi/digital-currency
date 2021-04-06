@@ -20,15 +20,16 @@ class User(Thread):
           self.nTransactions = nTransactions
           self.stats = stats
           self.throughput = throughput
+
     
     def run(self):
-        self.addAsset()
+        self.addAsset(self.value)
         self.perform_transactions()
     
-    def addAsset(self):
+    def addAsset(self, amount: int):
         payload = {
             "fcn": "Mint",
-            "args": [str(self.value)],
+            "args": [str(amount)],
             "peers": [
                 "peer0.msb1.example.com",
                 "peer0.msb2.example.com"
@@ -39,7 +40,17 @@ class User(Thread):
         return self.helper(payload)
 
     def removeAsset(self, amount: int):
-        pass
+        payload = {
+            "fcn": "Burn",
+            "args": [str(amount)],
+            "peers": [
+                "peer0.msb1.example.com",
+                "peer0.msb2.example.com"
+            ],
+            "chaincodeName": "token-erc-20",
+            "channelName": "mychannel"
+        }
+        return self.helper(payload)
     
 
     def perform_transactions(self):
@@ -145,3 +156,6 @@ def post(payload, url, headers=None):
         print(f"Post Request Error ", e)
         return response
     return response
+
+
+

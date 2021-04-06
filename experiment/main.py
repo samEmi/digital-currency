@@ -112,4 +112,15 @@ if __name__ == '__main__':
     result = measure_dsdb(spent_tokens)
     print(result)
 
+    response = addUser("sam")
+    if response and response["success"]:
+        token = response["token"]
+        user = User(token, init_value=1000, size=None, amount=1, stats=[])
+        r1 = user.addAsset(1000)
+        r2 = user.removeAsset(200)
+        print("addAsser : ", r1)
+        print("removeAsset: ", r2)
+
+
+
 
