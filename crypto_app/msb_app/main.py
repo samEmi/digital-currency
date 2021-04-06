@@ -42,7 +42,7 @@ def signup_post():
     fabric_token = addUser(str(account_id))['token']
     print(fabric_token, flush=True)
     user = User(address=fabric_token, init_value=50)
-    user.addAsset()
+    user.addAsset(40)
     new_user.token = fabric_token
     new_user.save_to_db()
     return jsonify({'message': 'Created.' + account_id}), 201
@@ -156,5 +156,6 @@ def receive_tokens_into_account():
     # invoke mint chaincode function using Fabric API
     # TODO: modify amount once denominations are implemented
     fabric_user = User(address=user.token, init_value=len(signatures))
-    fabric_user.addAsset()
+    fabric_user.addAsset(amount=len(signatures))
+    
     return jsonify({'message': 'Payment completed successfully'}), 201

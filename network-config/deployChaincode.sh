@@ -406,16 +406,16 @@ chaincodeQuery() {
 # chaincodeQuery
 
 # Run this function if you add any new dependency in chaincode
-presetup
-packageChaincode
+# presetup
+# packageChaincode
 installChaincode
 queryInstalled
 approveForMyOrg1
 approveForMyOrg2
 approveForMyOrg3
 
-# approveForMyOrg4
-# approveForMyOrg5
+# # approveForMyOrg4
+# # approveForMyOrg5
 
 checkCommitReadyness
 commitChaincodeDefination
