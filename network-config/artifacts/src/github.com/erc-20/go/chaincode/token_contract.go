@@ -37,13 +37,13 @@ type spentToken struct {
 func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, amount int) error {
 
 	// Check minter authorization - this sample assumes Org1 is the central banker with privilege to mint new tokens
-	clientMSPID, err := ctx.GetClientIdentity().GetMSPID()
-	if err != nil {
-		return fmt.Errorf("failed to get MSPID: %v", err)
-	}
-	if clientMSPID != "MSB1" {
-		return fmt.Errorf("client is not authorized to mint new tokens")
-	}
+// 	clientMSPID, err := ctx.GetClientIdentity().GetMSPID()
+// 	if err != nil {
+// 		return fmt.Errorf("failed to get MSPID: %v", err)
+// 	}
+// 	if clientMSPID != "MSB1" {
+// 		return fmt.Errorf("client is not authorized to mint new tokens")
+// 	}
 
 	// Get ID of submitting client identity
 	minter, err := ctx.GetClientIdentity().GetID()
@@ -119,13 +119,13 @@ func (s *SmartContract) Mint(ctx contractapi.TransactionContextInterface, amount
 func (s *SmartContract) Burn(ctx contractapi.TransactionContextInterface, amount int) error {
 
 	// Check minter authorization - this sample assumes Org1 is the central banker with privilege to burn new tokens
-	clientMSPID, err := ctx.GetClientIdentity().GetMSPID()
-	if err != nil {
-		return fmt.Errorf("failed to get MSPID: %v", err)
-	}
-	if clientMSPID != "Org1MSP" {
-		return fmt.Errorf("client is not authorized to mint new tokens")
-	}
+// 	clientMSPID, err := ctx.GetClientIdentity().GetMSPID()
+// 	if err != nil {
+// 		return fmt.Errorf("failed to get MSPID: %v", err)
+// 	}
+// 	if clientMSPID != "Org1MSP" {
+// 		return fmt.Errorf("client is not authorized to mint new tokens")
+// 	}
 
 	// Get ID of submitting client identity
 	minter, err := ctx.GetClientIdentity().GetID()
