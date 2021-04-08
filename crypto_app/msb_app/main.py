@@ -130,7 +130,7 @@ def receive_tokens_into_account():
             return jsonify({'message': 'Double-spent attempt'}), 400
     
     # deserialise token pubkeys
-    token_pubkeys = [Conversion.IP2OS(int(token_pubkey)) for token_pubkey in token_pubkeys]
+    deser_token_pubkeys = [Conversion.IP2OS(int(token_pubkey)) for token_pubkey in token_pubkeys]
 
     total_value = request.args.get('total_value')
     providers = data.get('providers')
@@ -141,7 +141,7 @@ def receive_tokens_into_account():
     verif1 = time.time()
     
     if signatures is None or len(signatures) != int(total_value) or \
-    verify_signature(signatures, token_pubkeys, nonce) is False:
+    verify_signature(signatures, deser_token_pubkeys, nonce) is False:
         return jsonify({'message': 'Invalid Signature'}), 400
     print(f"Verify ownership sig: {time.time() - verif1}", flush=True)
    
@@ -149,7 +149,7 @@ def receive_tokens_into_account():
     blind_signatures = data.get('blind_signatures')
     verif2 = time.time()
     if blind_signatures is None or len(blind_signatures) != int(total_value) or \
-    verify_blind_signature(blind_signatures, providers, token_pubkeys) is False:
+    verify_blind_signature(blind_signatures, providers, deser_token_pubkeys) is False:
         return jsonify({'message': 'Invalid Blind Signature'}), 400
     print(f"Verify blind sig: {time.time() - verif2}", flush=True)
     
@@ -157,5 +157,9 @@ def receive_tokens_into_account():
     # TODO: modify amount once denominations are implemented
     fabric_user = User(address=user.token, init_value=len(signatures))
     fabric_user.addAsset(amount=len(signatures))
+    
+    # if transaction is successfully published add tokens to dsdb 
+    for token_pubkey in token_pubkeys:
+        resp = dsdb.AddToken(pk=token_pubkey)
     
     return jsonify({'message': 'Payment completed successfully'}), 201
