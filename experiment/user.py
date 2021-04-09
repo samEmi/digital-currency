@@ -38,7 +38,7 @@ class User(Thread):
             "channelName": "mychannel"
         }
         return self.helper(payload)
-
+ 
     def removeAsset(self, amount: int):
         payload = {
             "fcn": "Burn",
