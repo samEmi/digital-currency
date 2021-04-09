@@ -1,6 +1,7 @@
 import requests
 import random
-from threading import Thread
+import threading
+from threading import Thread, Event
 import time
 
 random.seed(10)
@@ -20,7 +21,7 @@ class User(Thread):
           self.nTransactions = nTransactions
           self.stats = stats
           self.throughput = throughput
-
+          self.stopped = False
     
     def run(self):
         self.addAsset(self.value)
@@ -60,19 +61,15 @@ class User(Thread):
             self.addToLatencyList()
 
     def addToThroughPutList(self):
-        elapsed = 0
         nTrnasactions = 0
-        while elapsed < 10:
+        while not self.stopped:
             randInt = random.randint(0, self.size)
-            start = time.time()
             r = self.transfer(randInt, self.amount)
-            end = time.time()
             if r["result"]:
                 # print("Response ", r, "Recipient ", randInt, "Thread name ", self.name)
                 nTrnasactions += 1
-            # else:
-            #     print(":(((", r, "Thread name ", self.name)
-            elapsed += end - start
+            else:
+                print(":(((", r, "Thread name ", self.name)
         self.stats.append(nTrnasactions)
 
     def addToLatencyList(self):
@@ -85,8 +82,8 @@ class User(Thread):
                 # print("Response ", r, "Recipient ", randInt, "Thread name ", self.name)
                 success += 1
                 total += r["latency"]
-            # else:
-            #     print(":(((", r, "Thread name ", self.name)
+            else:
+                print("RandInt", randInt, ":(((", r, "Thread name ", self.name)
         if success: self.stats.append(total/success)
 
     def transfer(self, recipient, amount):
@@ -123,7 +120,7 @@ class User(Thread):
             'total_value': amount,
             'time': time
         }
-        requests.post("http://%s/send_tokens_to_merchant" % config['pw'], params=params)
+        return requests.post("http://%s/send_tokens_to_merchant" % config['pw'], params=params)
 
     def helper(self, payload):
         url = f'{rootUrl}/channels/mychannel/chaincodes/token-erc-20'
@@ -144,7 +141,7 @@ def addCryptoUser(account_id: str, account_pin: str, msb_id='msb1'):
         'account_id': account_id,
         'account_pin': account_pin
     }
-    requests.post("http://%s/signup_post" % config[msb_id], params=params)
+    return requests.post("http://%s/signup_post" % config[msb_id], params=params)
 
 
 def post(payload, url, headers=None):

@@ -1,49 +1,29 @@
 from user import User, addUser, addCryptoUser
 import statistics
-from dsdb import db
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+import time
 
-# Gets values for the latency against transactions graph
-def latency_against_transactions(runs):
+
+def latency_against_transactions(runs, nUsers):
     means = []
     stds = []
     for size in nUsers:
-        mean, std = monte_carlo_run(size, runs, transactions=nTransactions)
+        mean, std = monte_carlo_run(size, runs)
         means.append(mean)
         stds.append(std)
-        print("mean Latency : ", mean)
-        print("mean std : ", std)
-    return mean, std
-#
-# # Gets values for the latency against numberOfTransactions per user graph
-# def latency_against_transactions(runs):
-#     avg_latencies = []
-#     for transaction in transactions:
-#         avg_latency = monte_carlo_run(network_size, runs, transactions=transaction)
-#         print("Avg Latency : ", avg_latency)
-#         avg_latencies.append(avg_latency)
-#     return avg_latencies
-#
-# def transactions_against_size(runs):
-#     avg_transactions = []
-#     for size in networkSizes:
-#         avg_transaction = monte_carlo_run(size, runs, throughput=True)
-#         print("Avg Transactions : ", avg_transaction)
-#         avg_transactions.append(avg_transaction)
-#     return avg_transactions
+    return means, stds
 
-
-def monte_carlo_run(size,  runs, transactions=0, throughput=False):
+def monte_carlo_run(size,  runs, transactions=0):
     latencies = []
     for i in range(runs):
         print("Network Size ", size, "nTransactionsPerUser", transactions, "run ", i + 1)
-        latency = get_avg_stat(size, transactions=transactions, throughput=throughput)
+        latency = get_avg_stat(size, transactions=transactions)
         latencies.append(latency)
     mean = statistics.mean(latencies)
     std = statistics.stdev(latencies)
     return mean, std
 
-def get_avg_stat(size, transactions=0, throughput=False):
+def get_avg_stat(size, transactions=0):
     stats = []
     userList = []
     for i in range(size):
@@ -51,10 +31,8 @@ def get_avg_stat(size, transactions=0, throughput=False):
         if response and response["success"]:
             token = response["token"]
             user = User(token, init_value=1000, size=size, amount=1,
-                        nTransactions=transactions, stats=stats,
-                        throughput=throughput)
+                        nTransactions=transactions, stats=stats)
             user.start()
-            # time.sleep(3)
             userList.append(user)
         else:
             print(response)
@@ -62,36 +40,131 @@ def get_avg_stat(size, transactions=0, throughput=False):
     avgStat = sum(stats)/len(stats)
     return avgStat
 
-# def measure_dsdb(spent_tokens):
-#     result = []
-#     response = addUser("root")
-#     if response and response["success"]:
-#         token = response["token"]
-#         dataBase = db(token)
-#         for token in spent_tokens:
-#             dataBase.AddToken(str(token))
-#             r = dataBase.FindToken(token)
-#             result.append(r["latency"])
-#     else:
-#         print("Failed to Measure dsdb")
-#     return result
-#
-#
-# def plot_latency_size(avg_latencies, x, xLabel='Number of users', yLabel="Average Latency / ms"
-#                       , title=f"Average Latency against Number of users"):
-#     plt.plot(x, avg_latencies)
-#     plt.xlabel(xLabel)
-#     plt.ylabel(yLabel)
-#     plt.title(title)
-#     plt.show()
+def latency_nMSBs(nMSBs, runs):
+    means = []
+    stds = []
+    for nMSB in nMSBs:
+        mean, std = get_latency(nMSB, runs)
+        means.append(mean)
+        stds.append(std)
+        print("mean ", mean)
+        print("std ", std)
+    return means, stds
 
-def plotLine(x, y, yerr, title, xlabel, ylabel):
-    fig, ax = plt.subplots()
-    ax.errorbar(x, y,yerr=yerr, fmt='-o')
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel)
-    ax.set_title(title)
-    plt.show()
+def get_latency(nMSB, runs):
+    msb = nMSB * runs
+    latencies = []
+    userList = []
+    for i in range(nMSB + 1):
+        response = addUser(msb + i)
+        if response and response["success"]:
+            token = response["token"]
+            user = User(token, init_value=1000, size=100, amount=1,
+                        nTransactions=runs, stats=latencies)
+            user.start()
+            userList.append(user)
+            time.sleep(3)
+        else:
+            print(response)
+    for user in userList: user.join()
+    mean = statistics.mean(latencies)
+    std = statistics.stdev(latencies)
+    return mean, std
+
+
+def throughput_nMSBs(nMSBs, runs):
+    means = []
+    stds = []
+    for nMSB in nMSBs:
+        tokens = [addUser(i)["token"] for i in range(nMSB)]
+        mean, std = monteCalro(tokens, runs)
+        means.append(mean)
+        stds.append(std)
+    return means, stds
+
+def monteCalro(tokens, runs):
+    throughputs = []
+    for i in range(runs):
+        throughputs.append(getThroughput(tokens))
+    mean = statistics.mean(throughputs)
+    std = statistics.stdev(throughputs)
+    return mean, std
+
+def getThroughput(tokens):
+    stats = []
+    users = [User(token, init_value=1000, size=100, amount=1, stats=stats, throughput=True)
+             for token in tokens]
+    for user in users:user.start()
+    time.sleep(10)
+    for user in users: user.stopped = True
+    for user in users: user.join()
+    return sum(stats)
+
+
+
+# def get_pw_pw_stats(size, transactions=0, throughput=False):
+#     means = []
+#     stds = []
+#     for i in range(num_users):
+#         r = addCryptoUser(str(i), str(i), 'msb1')
+#         token = r["token"]
+#         user = User(token)
+#         r = user.transfer_pw_to_acc(str(i), 1, 100)
+#         mean = r["latency"]
+#         std = r["std"]
+#         means.append(mean)
+#         stds.append(stds)
+#     return means, stds
+
+
+
+
+def plotExpA(x, y, y1, yerr, yerr1):
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=x, y=y,
+                        mode='lines+markers',
+                        name='MSB-MSB',
+                        error_y=dict(
+                type='data',
+                array=yerr,
+                visible=True)
+        ))
+    fig.add_trace(go.Scatter(x=x, y=y1,
+                        mode='lines+markers',
+                        name='PW-MSB',
+                        error_y=dict(
+                type='data',
+                array=yerr1,
+                visible=True)
+                        ))
+    fig.update_layout(title='Latency against number of transactions',
+                      xaxis_title='Number of Transactions',
+                      yaxis_title='Average Latency/ms')
+
+    fig.show()
+
+
+def plotExpB(x, y, yerr):
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+        x=x, y=y,
+        error_y=dict(type='data', array=yerr)
+    ))
+    fig.update_layout(title='Latency against number of MSBs',
+                          xaxis_title='Number of MSBs',
+                          yaxis_title='Average Latency/ms')
+    fig.show()
+
+def plotExpC(x, y, yerr):
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+        x=x, y=y,
+        error_y=dict(type='data', array=yerr)
+    ))
+    fig.update_layout(title='Throughput against the network size',
+                          xaxis_title='Number of MSBs',
+                          yaxis_title='Number of transactions in 10seconds/ms')
+    fig.show()
 
 #TODO: initialise a batch of users for each one of the msbs
 def addUsers(num_users: int):
@@ -103,42 +176,24 @@ def addUsers(num_users: int):
 
 
 if __name__ == '__main__':
-    # Constants for the latency against number of transactions graph
+    #Experiment A
     nTransactions = 5
     nUsers = [2, 10, 25, 50, 100, 200]
-    means, stds = latency_against_transactions(3)
+    means, stds = latency_against_transactions(10, nUsers)
+    # means1, stds1 = get_pw_pw_stats(10)
     transactions = [nTransactions * i for i in nUsers]
-    plotLine(transactions, means, stds, "Latency against number of transactions", "Number of Transactions", "Average Latency/ms")
-    # avg_latencies = latency_against_size(10)
-    # plot_latency_size(avg_latencies, networkSizes)
-    # #----------------------------------------------------------------------------------------------------------
-    # #
-    # # # # Constants for the latency against numberOfTransactions per user graph
-    # network_size = 5
-    # transactions = [5, 10, 25, 50, 75, 100, 150, 200] # each value represents the number of transactions per user for an experiment
-    # avg_latencies = latency_against_transactions(10)
-    # plot_latency_size(avg_latencies, transactions, xLabel='Number of transactions per user', yLabel="Average Latency / ms"
-    #                   , title='Average Latency against Number of Users per transaction')
-    #
-    # # # #----------------------------------------------------------------------------------------------------------
-    # avg_transactions = transactions_against_size(1)
-    # plot_latency_size(avg_transactions, networkSizes, xLabel='Number of users', yLabel="avg number of transactions in 10 seconds", title='Throughput against number of users')
-    #
-    # # #------------------------------------------------------------------------------------------------------------
-    # spent_tokens = [2, 5, 10, 20, 50, 100, 200, 400, 800, 1000, 2000]
-    # result = measure_dsdb(spent_tokens)
-    # print(result)
+    plotExpA(transactions, means, means, stds, stds)
 
+    # Experiment B
+    nMSBs = [1, 2, 3, 4, 5]
+    means, stds = latency_nMSBs(nMSBs, 10)
+    plotExpB(nMSBs, means, stds)
 
-    # Instantiating a user
-    # response = addUser("sam")
-    # if response and response["success"]:
-    #     token = response["token"]
-    #     user = User(token, init_value=1000, size=None, amount=1, stats=[])
-    #     r1 = user.addAsset(1000)
-    #     r2 = user.removeAsset(200)
-    #     print("addAsser : ", r1)
-    #     print("removeAsset: ", r2)
+    # Experiment C
+    nMSBs = [1, 2, 3, 4, 5]
+    means, stds = throughput_nMSBs(nMSBs, 10)
+    plotExpC(nMSBs, means, stds)
+
 
 
 
