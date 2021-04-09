@@ -14,6 +14,7 @@ class AccountModel(UserMixin, db.Model):
     account_pin = db.Column(db.String(100), nullable=False)
     name = db.Column(db.String(1000))
     sigvars = relationship('SigVarsModel')
+    token = db.Column(db.String(100), unique=True)
 
     def get_id(self):
         return self.id

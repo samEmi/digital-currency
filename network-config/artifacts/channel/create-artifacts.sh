@@ -6,14 +6,13 @@ rm genesis.block mychannel.tx
 rm -rf ../../channel-artifacts/*
 
 #Generate Crypto artifactes for organizations
-cryptogen generate --config=./crypto-config.yaml --output=./crypto-config/
+# cryptogen generate --config= ./crypto-config.yaml --output=./crypto-config/
 
 
 # System channel
 SYS_CHANNEL="sys-channel"
-
 # channel name defaults to "mychannel"
-CHANNEL_NAME="mychannel"
+CHANNEL_NAME="mychannel1"
 
 echo $CHANNEL_NAME
 

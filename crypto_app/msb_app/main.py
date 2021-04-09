@@ -1,9 +1,9 @@
 from flask import request, current_app, jsonify, flash, Blueprint, render_template
 from .utils import *
-# from ....experiment.user import User, addUser
-# from ....experiment.dsdb import db
+from experiment.user import User, addUser
+from experiment.dsdb import db
 import json
-import requests
+import requests 
 from crypto_utils.signatures import SignerBlindSignature
 from crypto_utils.conversions import SigConversion
 from flask_jwt_extended import jwt_required
@@ -39,8 +39,11 @@ def signup_post():
 
     new_user = AccountModel(account_id=account_id, account_pin=account_pin)
     # create corresponding fabric user
-    # fabric_token = addUser(str(account_id))['token']
-    # new_user.token = fabric_token
+    fabric_token = addUser(str(account_id))['token']
+    print(fabric_token, flush=True)
+    user = User(address=fabric_token, init_value=50)
+    user.addAsset(40)
+    new_user.token = fabric_token
     new_user.save_to_db()
     return jsonify({'message': 'Created.' + account_id}), 201
 
@@ -99,10 +102,11 @@ def withdraw_tokens():
         res = gen_proofs_handler(es, timestamp, userid)
         resp = json.dumps(res)
         # invoken 'burn' chaincode function using Fabric API
-        # user = AccountModel.query.get(userid)
-        # fabric_user = User(token=user.token)
-        # #TODO: add proper amt once denominations are implemented
-        # fabric_user.removeAsset(value=len(es))
+        user = AccountModel.query.get(userid)
+        print(f'User token: {user.token}', flush=True)
+        fabric_user = User(address=user.token)
+        #TODO: add proper amt once denominations are implemented
+        fabric_user.removeAsset(amount=len(es))
         return resp, 201
     except Exception as e:
         resp = jsonify({
@@ -115,15 +119,18 @@ def withdraw_tokens():
 def receive_tokens_into_account():
     data = json.loads(request.get_json())
     token_pubkeys = data.get('token_pubkeys')
-    # user = AccountModel.query.filter_by(account_id=request.args.get('account_id')).first()
+
+    user = AccountModel.query.filter_by(account_id=request.args.get('account_id')).first()
     # check against double-spending using Fabric API
-    # dsdb = db(user.token)
-    # for token_pubkey in token_pubkeys:
-    #     if dsdb.FindToken(token_pubkey) is True:
-    #         return jsonify({'message': 'Double-spent attempt'}), 400
+    dsdb = db(address=user.token)
+    for token_pubkey in token_pubkeys:
+        resp = dsdb.FindToken(pk=token_pubkey)
+        # if the token is spent already then transaction is a double-spent
+        if resp['result'] is True:
+            return jsonify({'message': 'Double-spent attempt'}), 400
     
     # deserialise token pubkeys
-    token_pubkeys = [Conversion.IP2OS(int(token_pubkey)) for token_pubkey in token_pubkeys]
+    deser_token_pubkeys = [Conversion.IP2OS(int(token_pubkey)) for token_pubkey in token_pubkeys]
 
     total_value = request.args.get('total_value')
     providers = data.get('providers')
@@ -134,7 +141,7 @@ def receive_tokens_into_account():
     verif1 = time.time()
     
     if signatures is None or len(signatures) != int(total_value) or \
-    verify_signature(signatures, token_pubkeys, nonce) is False:
+    verify_signature(signatures, deser_token_pubkeys, nonce) is False:
         return jsonify({'message': 'Invalid Signature'}), 400
     print(f"Verify ownership sig: {time.time() - verif1}", flush=True)
    
@@ -142,12 +149,17 @@ def receive_tokens_into_account():
     blind_signatures = data.get('blind_signatures')
     verif2 = time.time()
     if blind_signatures is None or len(blind_signatures) != int(total_value) or \
-    verify_blind_signature(blind_signatures, providers, token_pubkeys) is False:
+    verify_blind_signature(blind_signatures, providers, deser_token_pubkeys) is False:
         return jsonify({'message': 'Invalid Blind Signature'}), 400
     print(f"Verify blind sig: {time.time() - verif2}", flush=True)
     
     # invoke mint chaincode function using Fabric API
-    # #TODO: modify amount once denominations are implemented
-    # fabric_user = User(token=user.token, init_value=len(signatures))
-    # fabric_user.addAsset()
+    # TODO: modify amount once denominations are implemented
+    fabric_user = User(address=user.token, init_value=len(signatures))
+    fabric_user.addAsset(amount=len(signatures))
+    
+    # if transaction is successfully published add tokens to dsdb 
+    for token_pubkey in token_pubkeys:
+        resp = dsdb.AddToken(pk=token_pubkey)
+    
     return jsonify({'message': 'Payment completed successfully'}), 201
